@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="theme-color" content="#5B7268">
+<title>Andamiaje · Práctica psicopedagógica</title>
+<style>
+  :root{
+    --bone:#F4F1EA; --paper:#FBFAF6; --ink:#23282A; --ink-soft:#5A6360;
+    --sage:#5B7268; --sage-deep:#3F534B; --sage-tint:#E4EAE4;
+    --clay:#B4744F; --clay-tint:#F3E4D8;
+    --line:#D8D3C6; --line-soft:#E7E2D6;
+    --ok:#5B7268; --warn:#B4744F; --err:#A34A3C;
+    --blue:#4A6B82; --violet:#6B5B82; --amber:#C09553;
+    --shadow:0 1px 2px rgba(35,40,42,.04),0 8px 24px rgba(35,40,42,.06);
+    --shadow-lg:0 4px 12px rgba(35,40,42,.08),0 20px 48px rgba(35,40,42,.12);
+    --r:14px; --r-sm:10px;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",ui-monospace,"Cascadia Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{font-family:var(--sans);background:var(--bone);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden;padding-bottom:76px}
+  ::selection{background:var(--sage-tint)}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input,textarea,select{font-family:inherit;font-size:16px}
+  h1,h2,h3,h4{margin:0;font-weight:600}
+  a{color:var(--sage-deep)}
+  .topbar{position:sticky;top:0;z-index:40;background:rgba(244,241,234,.9);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line);padding:12px 16px;display:flex;align-items:center;gap:12px}
+  .brand{display:flex;align-items:center;gap:10px;min-width:0}
+  .mark{width:34px;height:34px;flex:none;border-radius:9px;background:linear-gradient(150deg,var(--sage),var(--sage-deep));display:grid;place-items:center;box-shadow:var(--shadow)}
+  .mark svg{width:20px;height:20px}
+  .brand-txt b{font-family:var(--serif);font-size:16px;letter-spacing:.2px;display:block;line-height:1.1}
+  .brand-txt small{font-size:11px;color:var(--ink-soft);letter-spacing:.14em;text-transform:uppercase}
+  .topbar-sp{flex:1}
+  .icon-btn{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;color:var(--ink-soft);border:1px solid transparent;transition:.15s;position:relative}
+  .icon-btn:hover{background:var(--paper);border-color:var(--line)}
+  .icon-btn svg{width:20px;height:20px}
+  .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:45;background:rgba(251,250,246,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;padding:6px 6px calc(6px + env(safe-area-inset-bottom));max-width:820px;margin:0 auto}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 4px;border-radius:12px;color:var(--ink-soft);transition:.15s;font-size:10.5px;font-weight:600;letter-spacing:.02em}
+  .tab svg{width:22px;height:22px}
+  .tab.on{color:var(--sage-deep)}
+  .tab.on .tab-ico{background:var(--sage-tint)}
+  .tab-ico{width:52px;height:30px;border-radius:16px;display:grid;place-items:center;transition:.2s}
+  .wrap{max-width:820px;margin:0 auto;padding:18px 16px 24px;width:100%}
+  .view{display:none;animation:fade .35s ease both}
+  .view.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--clay);font-weight:600;margin-bottom:8px}
+  .vh{font-family:var(--serif);font-size:26px;line-height:1.15;margin-bottom:4px;letter-spacing:-.01em}
+  .vlede{color:var(--ink-soft);font-size:14.5px;margin-bottom:20px;max-width:56ch}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
+  .card.tight{padding:14px}
+  label.fld{display:block;margin-bottom:14px}
+  label.fld > span{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px}
+  label.fld > span em{font-style:normal;color:var(--ink-soft);font-weight:400}
+  .input,textarea.input,select.input{width:100%;padding:12px 14px;background:var(--bone);border:1px solid var(--line);border-radius:var(--r-sm);color:var(--ink);transition:.15s;outline:none}
+  .input:focus,textarea.input:focus,select.input:focus{border-color:var(--sage);background:var(--paper);box-shadow:0 0 0 3px var(--sage-tint)}
+  textarea.input{resize:vertical;min-height:90px;line-height:1.5}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+  @media(max-width:520px){.grid2{grid-template-columns:1fr}}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;border-radius:12px;font-weight:600;font-size:15px;transition:.15s;border:1px solid transparent}
+  .btn svg{width:18px;height:18px}
+  .btn-primary{background:var(--sage);color:#fff;box-shadow:var(--shadow)}
+  .btn-primary:hover{background:var(--sage-deep)}
+  .btn-primary:disabled{opacity:.5;cursor:not-allowed}
+  .btn-ghost{background:var(--paper);border-color:var(--line);color:var(--ink)}
+  .btn-ghost:hover{border-color:var(--sage);color:var(--sage-deep)}
+  .btn-clay{background:var(--clay);color:#fff}
+  .btn-clay:hover{filter:brightness(.94)}
+  .btn-danger{background:var(--paper);border-color:#E4C4BE;color:var(--err)}
+  .btn-sm{padding:9px 14px;font-size:13.5px;border-radius:10px}
+  .btn-block{width:100%}
+  .navrow{display:flex;gap:10px;margin-top:18px}
+  .navrow .btn{flex:1}
+  .toast{position:fixed;left:50%;bottom:88px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:99px;font-size:13.5px;font-weight:500;opacity:0;pointer-events:none;transition:.3s;z-index:95;box-shadow:var(--shadow-lg);max-width:90vw;text-align:center}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  .scrim{position:fixed;inset:0;background:rgba(35,40,42,.42);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:.25s;z-index:60}
+  .scrim.on{opacity:1;pointer-events:auto}
+  .sheet{position:fixed;left:0;right:0;bottom:0;z-index:70;background:var(--paper);border-radius:22px 22px 0 0;padding:8px 20px calc(24px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);max-width:600px;margin:0 auto;box-shadow:0 -8px 40px rgba(35,40,42,.2);max-height:92vh;overflow-y:auto}
+  .sheet.on{transform:translateY(0)}
+  .grab{width:38px;height:4px;background:var(--line);border-radius:99px;margin:8px auto 16px}
+  .sheet h3{font-family:var(--serif);font-size:20px;margin-bottom:4px}
+  .sheet .sub{font-size:13px;color:var(--ink-soft);margin-bottom:16px}
+  .empty{text-align:center;padding:44px 20px;color:var(--ink-soft)}
+  .empty svg{width:52px;height:52px;color:var(--line);margin-bottom:14px}
+  .empty h4{font-family:var(--serif);font-size:18px;color:var(--ink);margin-bottom:6px}
+  .empty p{font-size:14px;max-width:40ch;margin:0 auto 18px}
+  .searchbar{display:flex;gap:10px;margin-bottom:16px}
+  .searchbar .input{flex:1}
+  .plist{display:flex;flex-direction:column;gap:10px}
+  .pcard{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;gap:14px;transition:.15s;box-shadow:var(--shadow);cursor:pointer}
+  .pcard:hover{border-color:var(--sage);transform:translateY(-1px)}
+  .avatar{width:46px;height:46px;flex:none;border-radius:13px;display:grid;place-items:center;font-family:var(--serif);font-weight:600;font-size:18px;color:#fff}
+  .pcard-meta{flex:1;min-width:0}
+  .pcard-meta b{font-size:15.5px;display:block;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pcard-meta small{font-size:12.5px;color:var(--ink-soft)}
+  .pcard-tags{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap}
+  .tag{font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--sage-tint);color:var(--sage-deep)}
+  .tag.clay{background:var(--clay-tint);color:var(--clay)}
+  .tag.blue{background:#DEE9F0;color:var(--blue)}
+  .pcard-chev{color:var(--line)}
+  .phead{display:flex;align-items:center;gap:16px;margin-bottom:6px}
+  .phead .avatar{width:60px;height:60px;border-radius:16px;font-size:23px}
+  .phead-info b{font-family:var(--serif);font-size:22px;display:block;line-height:1.1}
+  .phead-info small{font-size:13px;color:var(--ink-soft)}
+  .subtabs{display:flex;gap:4px;background:var(--bone);border:1px solid var(--line);border-radius:12px;padding:4px;margin:16px 0}
+  .subtab{flex:1;text-align:center;padding:9px 6px;border-radius:9px;font-size:12.5px;font-weight:600;color:var(--ink-soft);transition:.15s}
+  .subtab.on{background:var(--paper);color:var(--sage-deep);box-shadow:var(--shadow)}
+  .pane{display:none}
+  .pane.on{display:block;animation:fade .3s ease both}
+  .kv{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:14px}
+  .kv:last-child{border-bottom:none}
+  .kv .k{color:var(--ink-soft)}
+  .kv .v{font-weight:600;text-align:right}
+  .tl{position:relative;padding-left:26px}
+  .tl::before{content:'';position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--line)}
+  .tlitem{position:relative;margin-bottom:16px}
+  .tlitem::before{content:'';position:absolute;left:-22px;top:5px;width:11px;height:11px;border-radius:50%;background:var(--sage);border:2px solid var(--paper);box-shadow:0 0 0 1px var(--line)}
+  .tlitem.report::before{background:var(--clay)}
+  .tldate{font-size:11.5px;font-weight:600;color:var(--ink-soft);letter-spacing:.03em;text-transform:uppercase;margin-bottom:4px}
+  .tlbody{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
+  .tlbody .th{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+  .tlbody .th b{font-size:14px}
+  .tlkind{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:6px}
+  .tlkind.session{background:var(--sage-tint);color:var(--sage-deep)}
+  .tlkind.report{background:var(--clay-tint);color:var(--clay)}
+  .tlkind.note{background:#DEE9F0;color:var(--blue)}
+  .tlbody p{margin:0;font-size:13.5px;color:var(--ink-soft);line-height:1.55;white-space:pre-wrap}
+  .tl-actions{display:flex;gap:8px;margin-top:8px}
+  .tl-actions button{font-size:12px;color:var(--ink-soft);padding:3px 6px;border-radius:6px}
+  .tl-actions button:hover{background:var(--bone);color:var(--ink)}
+  .agnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .agnav b{font-family:var(--serif);font-size:19px;text-transform:capitalize}
+  .agnav button{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--paper);display:grid;place-items:center;color:var(--ink-soft)}
+  .weekstrip{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+  .weekstrip::-webkit-scrollbar{display:none}
+  .day{flex:none;width:52px;text-align:center;padding:8px 0;border-radius:12px;border:1px solid var(--line);background:var(--paper);transition:.15s;cursor:pointer}
+  .day.today{border-color:var(--clay)}
+  .day.sel{background:var(--sage);border-color:var(--sage);color:#fff}
+  .day .dn{font-size:10px;text-transform:uppercase;letter-spacing:.05em;opacity:.7}
+  .day .dd{font-size:17px;font-weight:700;margin-top:2px}
+  .day .dot{width:5px;height:5px;border-radius:50%;background:var(--clay);margin:3px auto 0}
+  .day.sel .dot{background:#fff}
+  .appt-item{display:flex;gap:12px;padding:13px 15px;background:var(--paper);border:1px solid var(--line);border-radius:12px;margin-bottom:9px;box-shadow:var(--shadow);align-items:center;cursor:pointer}
+  .appt-time{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--sage-deep);flex:none;width:52px;line-height:1.2}
+  .appt-body{flex:1;min-width:0}
+  .appt-body b{font-size:14.5px;display:block}
+  .appt-body small{font-size:12px;color:var(--ink-soft)}
+  .appt-bar{width:3px;align-self:stretch;border-radius:99px;background:var(--sage)}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+  .stat{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
+  .stat .n{font-family:var(--serif);font-size:30px;line-height:1;color:var(--sage-deep)}
+  .stat .l{font-size:12px;color:var(--ink-soft);margin-top:5px}
+  .bars{display:flex;flex-direction:column;gap:9px}
+  .bar-row{display:flex;align-items:center;gap:10px}
+  .bar-lbl{font-size:12.5px;width:80px;flex:none;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bar-track{flex:1;height:9px;background:var(--bone);border-radius:99px;overflow:hidden}
+  .bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--sage),var(--sage-deep));transition:width .5s}
+  .bar-val{font-size:12px;font-weight:600;width:26px;text-align:right}
+  .fab{position:fixed;right:18px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:44;width:56px;height:56px;border-radius:18px;background:var(--sage);color:#fff;display:grid;place-items:center;box-shadow:var(--shadow-lg);transition:.15s}
+  .fab:hover{background:var(--sage-deep);transform:scale(1.05)}
+  .fab svg{width:26px;height:26px}
+  .banner{border-radius:var(--r);padding:13px 15px;font-size:13px;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start}
+  .banner svg{width:18px;height:18px;flex:none;margin-top:1px}
+  .banner-warn{background:#FBF1E9;border:1px solid #EBCDB6;color:#7A4B2C}
+  .banner-info{background:var(--sage-tint);border:1px solid #C3D2C6;color:var(--sage-deep)}
+  .link{color:var(--sage-deep);text-decoration:underline;font-weight:600}
+  .mini{font-size:12px;color:var(--ink-soft);line-height:1.5;margin-top:10px}
+  .divider{height:1px;background:var(--line-soft);margin:16px 0}
+  .row-between{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .status-dot{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;margin-top:10px}
+  .status-dot i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+  .status-dot.ok i{background:var(--ok)} .status-dot.ok{color:var(--sage-deep)}
+  .keyrow{display:flex;gap:8px;align-items:center} .keyrow .input{flex:1}
+  .voicebar{display:flex;align-items:center;gap:10px;margin-top:8px}
+  .mic{width:44px;height:44px;flex:none;border-radius:50%;background:var(--sage);color:#fff;display:grid;place-items:center;transition:.15s;box-shadow:var(--shadow)}
+  .mic svg{width:21px;height:21px}
+  .mic.rec{background:var(--err);animation:pulse 1.3s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(163,74,60,.5)}70%{box-shadow:0 0 0 14px rgba(163,74,60,0)}100%{box-shadow:0 0 0 0 rgba(163,74,60,0)}}
+  .voice-hint{font-size:12px;color:var(--ink-soft)}
+  .pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .pill{padding:9px 14px;border:1px solid var(--line);border-radius:99px;font-size:13px;font-weight:500;background:var(--paper);transition:.15s}
+  .pill.sel{background:var(--sage);color:#fff;border-color:var(--sage)}
+  .pill.sm{padding:7px 12px;font-size:12.5px}
+  .test-list{display:flex;flex-direction:column;gap:10px}
+  .test{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transition:.2s}
+  .test.has-data{border-color:var(--sage);box-shadow:0 0 0 1px var(--sage-tint)}
+  .test-head{display:flex;align-items:center;gap:12px;padding:13px 15px;cursor:pointer;user-select:none}
+  .test-ico{width:38px;height:38px;flex:none;border-radius:10px;background:var(--sage-tint);display:grid;place-items:center;color:var(--sage-deep);font-family:var(--serif);font-weight:600;font-size:14px}
+  .test.has-data .test-ico{background:var(--sage);color:#fff}
+  .test-meta{flex:1;min-width:0}.test-meta b{font-size:14px;display:block;line-height:1.2}.test-meta small{font-size:12px;color:var(--ink-soft)}
+  .test-chev{color:var(--ink-soft);transition:.25s}.test.open .test-chev{transform:rotate(180deg)}
+  .test-body{max-height:0;overflow:hidden;transition:max-height .3s ease}.test-body-inner{padding:0 15px 15px}
+  .chip-count{font-size:11px;font-weight:600;background:var(--sage);color:#fff;padding:2px 8px;border-radius:99px}
+  .thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .thumb{position:relative;width:64px;height:64px;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .thumb button{position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:6px;background:rgba(35,40,42,.72);color:#fff;display:grid;place-items:center;font-size:13px;line-height:1}
+  .addbtn{display:inline-flex;align-items:center;gap:7px;padding:9px 13px;border:1px dashed var(--line);border-radius:10px;color:var(--sage-deep);font-weight:600;font-size:13px;background:var(--bone);transition:.15s}
+  .addbtn:hover{border-color:var(--sage);background:var(--sage-tint)}.addbtn svg{width:16px;height:16px}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .genwrap{text-align:center;padding:8px 0}
+  .spinner{width:44px;height:44px;border:3px solid var(--line);border-top-color:var(--sage);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .gen-status{font-size:14px;color:var(--ink-soft);min-height:20px}
+  .report{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow-lg);overflow:hidden;margin-top:4px}
+  .report-head{background:linear-gradient(150deg,var(--sage-deep),var(--sage));color:#fff;padding:20px}
+  .report-head .re{font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.8}
+  .report-head h3{font-family:var(--serif);font-size:21px;margin-top:4px}
+  .report-head p{margin:6px 0 0;font-size:13px;opacity:.9}
+  .report-doc{padding:20px;font-size:14.5px;line-height:1.7}
+  .report-doc h4{font-family:var(--serif);color:var(--sage-deep);font-size:17px;margin:22px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--line-soft)}
+  .report-doc h4:first-child{margin-top:0}
+  .report-doc p{margin:0 0 11px}.report-doc ul{margin:0 0 12px;padding-left:20px}.report-doc li{margin-bottom:5px}
+  .report-doc strong{color:var(--sage-deep)}
+  .report-doc table{width:100%;border-collapse:collapse;margin:6px 0 14px;font-size:13px}
+  .report-doc th{background:var(--sage-deep);color:#fff;text-align:left;padding:7px 9px;font-weight:600}
+  .report-doc td{border:1px solid var(--line);padding:7px 9px;vertical-align:top}
+  .report-doc tr:nth-child(even) td{background:var(--bone)}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;padding:14px 20px;border-top:1px solid var(--line);background:var(--bone)}
+  .toolbar .btn{flex:1;min-width:110px;font-size:13.5px;padding:11px 12px}
+  details.adv{margin-top:8px}
+  details.adv summary{font-size:13px;color:var(--sage-deep);font-weight:600;cursor:pointer;padding:6px 0}
+  .steps-rail{display:flex;gap:4px;margin-bottom:18px}
+  .srail{flex:1;height:4px;border-radius:99px;background:var(--line)}
+  .srail.on{background:var(--clay)} .srail.done{background:var(--sage)}
+  .chipset{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .gen-block{border:1.5px dashed var(--sage);background:linear-gradient(180deg,var(--sage-tint),var(--paper) 60%);transition:.2s}
+  .gen-block.has-data{border-style:solid;box-shadow:0 0 0 1px var(--sage-tint),var(--shadow)}
+  .gen-block-head{display:flex;align-items:center;gap:12px}
+  .gen-block-ico{width:40px;height:40px;flex:none;border-radius:11px;background:var(--sage);color:#fff;display:grid;place-items:center}
+  .gen-block-ico svg{width:21px;height:21px}
+  .gen-block .addbtn{background:var(--paper)}
+  /* Gate de ingreso */
+  .gate{position:fixed;inset:0;z-index:200;background:linear-gradient(165deg,var(--sage-deep),var(--sage) 55%,#6E8378);
+    display:none;align-items:center;justify-content:center;padding:24px}
+  .gate-card{background:var(--paper);border-radius:22px;padding:30px 24px;max-width:360px;width:100%;
+    box-shadow:0 24px 70px rgba(0,0,0,.3);text-align:center}
+  .gate-card.shake{animation:shake .4s}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+  .gate-mark{width:52px;height:52px;border-radius:15px;background:linear-gradient(150deg,var(--sage),var(--sage-deep));
+    display:grid;place-items:center;margin:0 auto 14px}
+  .gate-mark svg{width:28px;height:28px}
+  .gate-card h2{font-family:var(--serif);font-size:21px;margin-bottom:3px}
+  .gate-card .gsub{font-size:13px;color:var(--ink-soft);margin-bottom:20px}
+  .gate-user{display:flex;align-items:center;gap:11px;background:var(--bone);border:1px solid var(--line);
+    border-radius:12px;padding:10px 12px;margin-bottom:14px;text-align:left}
+  .gate-user .avatar{width:38px;height:38px;border-radius:11px;font-size:15px}
+  .gate-user-txt{min-width:0;flex:1}
+  .gate-user-txt small{display:block;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+  .gate-user-txt b{font-size:14.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pin-input{width:100%;padding:15px;text-align:center;font-size:26px;letter-spacing:.5em;font-family:var(--mono);
+    background:var(--bone);border:1px solid var(--line);border-radius:12px;outline:none;transition:.15s;text-indent:.5em}
+  .pin-input:focus{border-color:var(--sage);box-shadow:0 0 0 3px var(--sage-tint);background:var(--paper)}
+  .gate-err{color:var(--err);font-size:12.5px;min-height:18px;margin-top:8px;font-weight:600}
+  .gate-foot{font-size:11.5px;color:var(--ink-soft);margin-top:16px;line-height:1.5}
+  /* Alertas */
+  #alertHost{display:block;width:100%}
+  .alert-card{display:flex;width:100%;box-sizing:border-box;align-items:center;gap:11px;padding:12px 13px;border-radius:var(--r);margin-bottom:9px;
+    background:var(--paper);border:1px solid var(--line);box-shadow:var(--shadow);animation:slidein .35s ease both}
+  @keyframes slidein{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+  .alert-card.hour{border-color:var(--clay);background:linear-gradient(90deg,var(--clay-tint),var(--paper) 70%)}
+  .alert-card.day{border-color:var(--sage);background:linear-gradient(90deg,var(--sage-tint),var(--paper) 70%)}
+  .alert-ico{width:36px;height:36px;flex:0 0 36px;border-radius:10px;display:grid;place-items:center;color:#fff}
+  .alert-card.hour .alert-ico{background:var(--clay);animation:ring 2.4s ease-in-out infinite}
+  .alert-card.day .alert-ico{background:var(--sage)}
+  .alert-ico svg{width:19px;height:19px}
+  @keyframes ring{0%,72%,100%{transform:rotate(0)}76%{transform:rotate(-11deg)}80%{transform:rotate(9deg)}84%{transform:rotate(-7deg)}88%{transform:rotate(5deg)}92%{transform:rotate(-3deg)}}
+  .alert-body{flex:1 1 auto;min-width:0;overflow:hidden}
+  .alert-body b{font-size:14px;display:block;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .alert-body small{font-size:12px;color:var(--ink-soft);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .alert-acts{display:flex;gap:5px;flex:0 0 auto}
+  .alert-done{width:33px;height:33px;flex:none;border-radius:9px;background:var(--sage);color:#fff;display:grid;place-items:center}
+  .alert-done svg{width:16px;height:16px}
+  .alert-done:hover{background:var(--sage-deep)}
+  .alert-x{width:26px;height:33px;flex:none;border-radius:9px;color:var(--ink-soft);font-size:19px;line-height:1}
+  .alert-x:hover{background:var(--bone)}
+  @media(max-width:400px){
+    .brand-txt small{display:none}
+    .icon-btn{width:36px}
+  }
+  .alert-badge{position:absolute;top:7px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--clay);border:1.5px solid var(--bone);display:none}
+  /* Estado de turnos */
+  .st-chip{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:2px 7px;border-radius:6px;flex:none}
+  .st-chip.done{background:var(--sage-tint);color:var(--sage-deep)}
+  .st-chip.noshow{background:var(--clay-tint);color:var(--clay)}
+  .st-chip.cancel{background:#E9E6DD;color:var(--ink-soft)}
+  .appt-item.done{opacity:.72}
+  .appt-item.cancel{opacity:.5}
+  .appt-item.cancel .appt-body b{text-decoration:line-through}
+  .st-chip.pend{background:var(--bone);color:var(--ink-soft);border:1px solid var(--line)}
+  .att-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+  .att{background:var(--bone);border:1px solid var(--line-soft);border-radius:10px;padding:9px 4px}
+  .att b{font-family:var(--serif);font-size:19px;display:block;line-height:1}
+  .att small{font-size:10px;color:var(--ink-soft);display:block;margin-top:3px}
+  .tl-src{display:inline-flex;align-items:center;gap:3px;font-size:9.5px;font-weight:600;text-transform:uppercase;
+    letter-spacing:.04em;color:var(--blue);background:#DEE9F0;padding:2px 6px;border-radius:5px}
+  .alert-card.late{border-color:var(--err);background:linear-gradient(90deg,#F7E4E0,var(--paper) 70%)}
+  .alert-card.late .alert-ico{background:var(--err);animation:none}
+  .alert-card.now{border-color:var(--err)}
+  .alert-card.now .alert-ico{background:var(--err)}
+  .subtabs{overflow-x:auto;scrollbar-width:none}
+  .subtabs::-webkit-scrollbar{display:none}
+  .subtab{flex:0 0 auto;min-width:60px;padding:9px 10px}
+</style>
+</head>
+<body>
+<div class="gate" id="gate">
+  <div class="gate-card" id="gateCard">
+    <div class="gate-mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 20V9l8-5 8 5v11" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 20v-6h6v6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 12l8-5 8 5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".6"/></svg></div>
+    <h2>Andamiaje</h2>
+    <p class="gsub">Ingresá tu clave para acceder</p>
+    <div class="gate-user">
+      <div class="avatar" id="gateAvatar">—</div>
+      <div class="gate-user-txt"><small>Usuario</small><b id="gateUser">—</b></div>
+    </div>
+    <input class="pin-input" id="gatePin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" placeholder="••••" autocomplete="off">
+    <div class="gate-err" id="gateErr"></div>
+    <button class="btn btn-primary btn-block" id="gateBtn" style="margin-top:4px">Ingresar</button>
+    <p class="gate-foot">Los datos se guardan solo en este dispositivo. La clave evita accesos casuales, no reemplaza el bloqueo del teléfono.</p>
+  </div>
+</div>
+<div class="topbar">
+  <div class="brand">
+    <div class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 20V9l8-5 8 5v11" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 20v-6h6v6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 12l8-5 8 5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".6"/></svg></div>
+    <div class="brand-txt"><b>Andamiaje</b><small>Práctica psicopedagógica</small></div>
+  </div>
+  <div class="topbar-sp"></div>
+  <button class="icon-btn" id="btnLock" title="Bloquear"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="10" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 118 0v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+  <button class="icon-btn" id="btnBackup" title="Respaldo"><span class="alert-badge" id="alertBadge"></span><svg viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <button class="icon-btn" id="btnSettings" title="Configuración"><svg viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 15a1.6 1.6 0 00.32 1.77l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.6 1.6 0 00-1.77-.32 1.6 1.6 0 00-.97 1.47V21a2 2 0 11-4 0v-.09A1.6 1.6 0 008.6 19.4a1.6 1.6 0 00-1.77.32l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.6 1.6 0 00.32-1.77 1.6 1.6 0 00-1.47-.97H2a2 2 0 110-4h.09A1.6 1.6 0 004.6 8.6a1.6 1.6 0 00-.32-1.77l-.06-.06a2 2 0 112.83-2.83l.06.06a1.6 1.6 0 001.77.32H8.6a1.6 1.6 0 00.97-1.47V2a2 2 0 114 0v.09a1.6 1.6 0 00.97 1.47 1.6 1.6 0 001.77-.32l.06-.06a2 2 0 112.83 2.83l-.06.06a1.6 1.6 0 00-.32 1.77v.09a1.6 1.6 0 001.47.97H22a2 2 0 110 4h-.09a1.6 1.6 0 00-1.47.97z" stroke="currentColor" stroke-width="1.5"/></svg></button>
+</div>
+<div class="wrap">
+  <section class="view on" data-view="home">
+    <div class="eyebrow" id="greetEyebrow">Hoy</div>
+    <h1 class="vh" id="greetTitle">Buen día</h1>
+    <p class="vlede" id="greetSub">Tu resumen del día y accesos rápidos.</p>
+    <div id="alertHost"></div>
+    <div class="stat-grid">
+      <div class="stat"><div class="n" id="hStatPac">0</div><div class="l">Pacientes activos</div></div>
+      <div class="stat"><div class="n" id="hStatToday">0</div><div class="l">Turnos hoy</div></div>
+    </div>
+    <div class="card">
+      <div class="row-between" style="margin-bottom:12px"><b style="font-family:var(--serif);font-size:16px">Próximos turnos</b><button class="btn btn-ghost btn-sm" data-nav="agenda">Ver agenda</button></div>
+      <div id="homeAppts"></div>
+    </div>
+    <div class="card">
+      <b style="font-family:var(--serif);font-size:16px;display:block;margin-bottom:12px">Accesos rápidos</b>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <button class="btn btn-ghost" id="qaNewPatient"><svg viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM19 8v6M22 11h-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Nuevo paciente</button>
+        <button class="btn btn-ghost" id="qaNewReport"><svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 2v6h6M12 18v-6M9 15h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Nuevo informe</button>
+        <button class="btn btn-ghost" id="qaNewAppt"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 2v4M8 2v4M3 10h18M12 14v4M10 16h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Nuevo turno</button>
+        <button class="btn btn-ghost" data-nav="metrics"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3v18h18M7 15l4-4 3 3 5-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Métricas</button>
+      </div>
+    </div>
+    <div class="banner banner-info" id="setupBanner" style="display:none">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/></svg>
+      <span>Para generar informes con IA, configurá tu clave de API en el ícono de <b>ajustes</b> (arriba a la derecha).</span>
+    </div>
+  </section>
+  <section class="view" data-view="patients">
+    <div class="eyebrow">Legajo</div>
+    <h1 class="vh">Pacientes</h1>
+    <p class="vlede">Historia clínica psicopedagógica de cada persona: datos, evoluciones, tests e informes.</p>
+    <div class="searchbar">
+      <input class="input" id="pSearch" placeholder="Buscar por nombre…">
+      <button class="btn btn-primary btn-sm" id="btnAddPatient"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="plist" id="patientList"></div>
+  </section>
+  <section class="view" data-view="patient">
+    <button class="btn btn-ghost btn-sm" data-nav="patients" style="margin-bottom:14px"><svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Pacientes</button>
+    <div class="phead">
+      <div class="avatar" id="pdAvatar">—</div>
+      <div class="phead-info"><b id="pdName">—</b><small id="pdSub">—</small></div>
+    </div>
+    <div class="subtabs">
+      <div class="subtab on" data-pane="ficha">Ficha</div>
+      <div class="subtab" data-pane="turnos">Turnos</div>
+      <div class="subtab" data-pane="evol">Evolución</div>
+      <div class="subtab" data-pane="tests">Tests</div>
+      <div class="subtab" data-pane="inf">Informes</div>
+    </div>
+    <div class="pane on" data-pane="ficha" id="paneFicha"></div>
+    <div class="pane" data-pane="turnos" id="paneTurnos"></div>
+    <div class="pane" data-pane="evol" id="paneEvol"></div>
+    <div class="pane" data-pane="tests" id="paneTests"></div>
+    <div class="pane" data-pane="inf" id="paneInf"></div>
+  </section>
+  <section class="view" data-view="agenda">
+    <div class="eyebrow">Agenda</div>
+    <h1 class="vh">Turnos</h1>
+    <p class="vlede">Organizá tus sesiones y evaluaciones. Tocá un día para ver o agregar turnos.</p>
+    <div class="agnav">
+      <button id="agPrev"><svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <b id="agMonth">—</b>
+      <button id="agNext"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+    <div class="weekstrip" id="weekstrip"></div>
+    <div id="dayAppts"></div>
+  </section>
+  <section class="view" data-view="report">
+    <button class="btn btn-ghost btn-sm" id="reportBack" style="margin-bottom:14px"><svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Volver</button>
+    <div class="steps-rail" id="flowRail"></div>
+    <div id="flowArea"></div>
+  </section>
+  <section class="view" data-view="metrics">
+    <div class="eyebrow">Panel</div>
+    <h1 class="vh">Métricas de la práctica</h1>
+    <p class="vlede">Una mirada de conjunto sobre tu actividad.</p>
+    <div class="stat-grid">
+      <div class="stat"><div class="n" id="mPac">0</div><div class="l">Pacientes totales</div></div>
+      <div class="stat"><div class="n" id="mSes">0</div><div class="l">Sesiones registradas</div></div>
+      <div class="stat"><div class="n" id="mInf">0</div><div class="l">Informes generados</div></div>
+      <div class="stat"><div class="n" id="mApp">0</div><div class="l">Turnos agendados</div></div>
+    </div>
+    <div class="card">
+      <b style="font-family:var(--serif);font-size:16px;display:block;margin-bottom:14px">Asistencia a turnos</b>
+      <div class="bars" id="apptStats"></div>
+    </div>
+    <div class="card">
+      <b style="font-family:var(--serif);font-size:16px;display:block;margin-bottom:14px">Motivos de consulta</b>
+      <div class="bars" id="motivoBars"></div>
+    </div>
+    <div class="card">
+      <b style="font-family:var(--serif);font-size:16px;display:block;margin-bottom:14px">Actividad reciente</b>
+      <div class="bars" id="activityBars"></div>
+    </div>
+  </section>
+</div>
+<button class="fab" id="fab" style="display:none"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+<nav class="tabbar" id="tabbar">
+  <button class="tab on" data-nav="home"><span class="tab-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1V10z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>Inicio</button>
+  <button class="tab" data-nav="patients"><span class="tab-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13A4 4 0 0119 7a4 4 0 01-3 3.87" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Pacientes</button>
+  <button class="tab" data-nav="agenda"><span class="tab-ico"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>Agenda</button>
+  <button class="tab" data-nav="metrics"><span class="tab-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3v18h18M7 14l3-3 3 3 5-6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Panel</button>
+</nav>
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet"><div class="grab"></div><div id="sheetContent"></div></div>
+<div class="toast" id="toast"></div>
+<script>
+/* ============================================================
+   Andamiaje — lógica de la app
+============================================================ */
+const DB_KEY='andamiaje_db_v2', LS_API='andamiaje_apikey', LS_MODEL='andamiaje_model';
+const AVATAR_COLORS=['#5B7268','#4A6B82','#6B5B82','#B4744F','#C09553','#3F534B','#8A5A4A'];
+let db={ patients:[], appts:[], profile:{name:'',matricula:'',centro:''}, meta:{created:Date.now()} };
+
+function loadDB(){ try{const d=JSON.parse(localStorage.getItem(DB_KEY)||'null'); if(d)db=Object.assign(db,d);}catch(e){} }
+function saveDB(){ try{localStorage.setItem(DB_KEY,JSON.stringify(db));}catch(e){toast('Sin espacio para guardar. Exportá un respaldo.');} }
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+
+const $=(s,c=document)=>c.querySelector(s), $$=(s,c=document)=>[...c.querySelectorAll(s)];
+let toastT; function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600);}
+function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function initials(n){return (n||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase()||'?';}
+function colorFor(id){let h=0;for(const c of (id||''))h=(h*31+c.charCodeAt(0))>>>0;return AVATAR_COLORS[h%AVATAR_COLORS.length];}
+const MONTHS=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const DAYS=['dom','lun','mar','mié','jue','vie','sáb'];
+function fmtDate(ts){const d=new Date(ts);return `${d.getDate()} ${MONTHS[d.getMonth()].slice(0,3)} ${d.getFullYear()}`;}
+function fmtDateLong(ts){const d=new Date(ts);return `${d.getDate()} de ${MONTHS[d.getMonth()]} de ${d.getFullYear()}`;}
+function dayKey(ts){const d=new Date(ts);return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;}
+function todayKey(){return dayKey(Date.now());}
+
+/* ---------- Navegación ---------- */
+let curView='home', curPatient=null;
+function nav(v){
+  curView=v;
+  $$('.view').forEach(x=>x.classList.toggle('on',x.dataset.view===v));
+  $$('.tab').forEach(t=>t.classList.toggle('on',t.dataset.nav===v || (v==='patient'&&t.dataset.nav==='patients')));
+  const fab=$('#fab');
+  if(v==='patients'){fab.style.display='grid';fab.onclick=()=>editPatient(null);}
+  else if(v==='agenda'){fab.style.display='grid';fab.onclick=()=>editAppt(null,agSel);}
+  else fab.style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(v==='home')renderHome();
+  if(v==='patients')renderPatients();
+  if(v==='agenda')renderAgenda();
+  if(v==='metrics')renderMetrics();
+}
+document.addEventListener('click',e=>{const n=e.target.closest('[data-nav]');if(n)nav(n.dataset.nav);});
+
+/* ---------- HOME ---------- */
+function renderHome(){
+  const h=new Date().getHours();
+  const g=h<12?'Buen día':h<19?'Buenas tardes':'Buenas noches';
+  const name=db.profile.name?', '+db.profile.name.split(' ')[0]:'';
+  $('#greetTitle').textContent=g+name;
+  $('#greetEyebrow').textContent=fmtDateLong(Date.now());
+  $('#hStatPac').textContent=db.patients.filter(p=>!p.archived).length;
+  const today=todayKey();
+  const todays=db.appts.filter(a=>dayKey(a.ts)===today).sort((a,b)=>a.ts-b.ts);
+  $('#hStatToday').textContent=todays.length;
+  const box=$('#homeAppts');
+  if(!todays.length){box.innerHTML='<p class="mini" style="margin:0">No hay turnos para hoy.</p>';}
+  else box.innerHTML=todays.map(a=>apptRow(a)).join('');
+  $$('#homeAppts [data-appt]').forEach(el=>el.onclick=()=>openStatusSheet(el.dataset.appt));
+  $('#setupBanner').style.display=localStorage.getItem(LS_API)?'none':'flex';
+  renderAlertBar();
+}
+function apptRow(a){
+  const p=db.patients.find(x=>x.id===a.patientId);
+  const d=new Date(a.ts);const hm=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  const st=apptStatus(a);
+  return `<div class="appt-item ${st}" data-appt="${a.id}"><div class="appt-bar" style="background:${ST_COLOR[st]}"></div>
+    <div class="appt-time">${hm}</div><div class="appt-body"><b>${esc(p?p.name:(a.title||'Turno'))}</b>
+    <small>${a.kind==='eval'?'Evaluación':'Sesión'}${a.note?' · '+esc(a.note):''}</small></div>
+    ${st!=='pending'?`<span class="st-chip ${st}">${ST_LABEL[st]}</span>`:''}</div>`;
+}
+
+/* ---------- PACIENTES ---------- */
+function renderPatients(){
+  const q=($('#pSearch').value||'').toLowerCase();
+  const list=$('#patientList');
+  const pts=db.patients.filter(p=>!p.archived && (!q||p.name.toLowerCase().includes(q))).sort((a,b)=>(b.updated||0)-(a.updated||0));
+  if(!pts.length){
+    list.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <h4>${q?'Sin resultados':'Todavía no hay pacientes'}</h4><p>${q?'Probá con otro nombre.':'Creá el primer legajo para empezar a registrar su historia.'}</p>
+      ${q?'':'<button class="btn btn-primary" onclick="editPatient(null)">Nuevo paciente</button>'}</div>`;
+    return;
+  }
+  list.innerHTML=pts.map(p=>{
+    const nSes=(p.evol||[]).filter(e=>e.kind==='session').length;
+    const nInf=(p.reports||[]).length;
+    const tags=[];
+    if(p.motivo)tags.push(`<span class="tag">${esc((p.motivoTag||p.motivo).slice(0,22))}</span>`);
+    if(nInf)tags.push(`<span class="tag clay">${nInf} informe${nInf>1?'s':''}</span>`);
+    if(nSes)tags.push(`<span class="tag blue">${nSes} sesión${nSes>1?'es':''}</span>`);
+    return `<div class="pcard" data-patient="${p.id}">
+      <div class="avatar" style="background:${colorFor(p.id)}">${initials(p.name)}</div>
+      <div class="pcard-meta"><b>${esc(p.name)}</b><small>${esc([p.edad,p.ocup].filter(Boolean).join(' · ')||'Sin datos')}</small>
+      <div class="pcard-tags">${tags.join('')}</div></div>
+      <div class="pcard-chev"><svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>`;
+  }).join('');
+  $$('#patientList [data-patient]').forEach(el=>el.onclick=()=>openPatient(el.dataset.patient));
+}
+
+function openPatient(id){
+  curPatient=db.patients.find(p=>p.id===id); if(!curPatient)return;
+  const p=curPatient;
+  $('#pdAvatar').textContent=initials(p.name); $('#pdAvatar').style.background=colorFor(p.id);
+  $('#pdName').textContent=p.name;
+  $('#pdSub').textContent=[p.edad,p.ocup].filter(Boolean).join(' · ')||'Sin datos';
+  nav('patient'); switchPane('ficha');
+}
+function switchPane(pane){
+  $$('.subtab').forEach(t=>t.classList.toggle('on',t.dataset.pane===pane));
+  $$('.pane').forEach(x=>x.classList.toggle('on',x.dataset.pane===pane));
+  const p=curPatient; if(!p)return;
+  if(pane==='ficha')renderFicha(p);
+  if(pane==='turnos')renderPatientAppts(p);
+  if(pane==='evol')renderEvol(p);
+  if(pane==='tests')renderPatientTests(p);
+  if(pane==='inf')renderPatientReports(p);
+}
+
+/* Turnos del paciente — historial de asistencia */
+function patientAppts(pid){return db.appts.filter(a=>a.patientId===pid).sort((a,b)=>b.ts-a.ts);}
+function renderPatientAppts(p){
+  const box=$('#paneTurnos');
+  const list=patientAppts(p.id);
+  const done=list.filter(a=>apptStatus(a)==='done').length;
+  const noshow=list.filter(a=>apptStatus(a)==='noshow').length;
+  const cancel=list.filter(a=>apptStatus(a)==='cancel').length;
+  const pend=list.filter(a=>apptStatus(a)==='pending').length;
+  const comp=done+noshow; // turnos que ya pasaron y se computaron
+  const adh=comp?Math.round(done/comp*100):null;
+
+  let html=`<button class="btn btn-primary btn-block btn-sm" style="margin-bottom:14px" onclick="editAppt(null,new Date(),'${p.id}')"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Agendar turno</button>`;
+
+  if(list.length){
+    html+=`<div class="card tight"><div class="row-between" style="margin-bottom:10px">
+      <b style="font-family:var(--serif);font-size:15.5px">Asistencia</b>
+      ${adh!==null?`<span class="tag ${adh>=80?'':'clay'}">${adh}% asistencia</span>`:''}</div>
+      <div class="att-grid">
+        <div class="att"><b style="color:var(--sage-deep)">${done}</b><small>Realizadas</small></div>
+        <div class="att"><b style="color:var(--clay)">${noshow}</b><small>No asistió</small></div>
+        <div class="att"><b style="color:var(--ink-soft)">${cancel}</b><small>Canceladas</small></div>
+        <div class="att"><b>${pend}</b><small>Pendientes</small></div>
+      </div></div>`;
+  }
+
+  if(!list.length){
+    html+=`<div class="empty" style="padding:30px 20px"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.5"/></svg><h4>Sin turnos</h4><p>Agendá el primer turno de este paciente.</p></div>`;
+  }else{
+    const now=Date.now();
+    const fut=list.filter(a=>a.ts>=now).reverse();
+    const pas=list.filter(a=>a.ts<now);
+    const row=a=>{
+      const d=new Date(a.ts);const st=apptStatus(a);
+      const hm=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+      return `<div class="appt-item ${st}" onclick="openStatusSheet('${a.id}')">
+        <div class="appt-bar" style="background:${ST_COLOR[st]}"></div>
+        <div class="appt-body"><b>${fmtDate(a.ts)} · ${hm}</b>
+        <small>${a.kind==='eval'?'Evaluación':'Sesión'}${a.note?' · '+esc(a.note):''}</small></div>
+        ${st!=='pending'?`<span class="st-chip ${st}">${ST_LABEL[st]}</span>`:'<span class="st-chip pend">Pendiente</span>'}</div>`;
+    };
+    if(fut.length)html+=`<b style="font-size:12px;color:var(--ink-soft);letter-spacing:.1em;display:block;margin:14px 0 8px">PRÓXIMOS</b>`+fut.map(row).join('');
+    if(pas.length)html+=`<b style="font-size:12px;color:var(--ink-soft);letter-spacing:.1em;display:block;margin:14px 0 8px">HISTORIAL</b>`+pas.map(row).join('');
+  }
+  box.innerHTML=html;
+}
+function renderFicha(p){
+  const kv=(k,v)=>v?`<div class="kv"><span class="k">${k}</span><span class="v">${esc(v)}</span></div>`:'';
+  const ap=patientAppts(p.id);
+  const done=ap.filter(a=>apptStatus(a)==='done').length;
+  const noshow=ap.filter(a=>apptStatus(a)==='noshow').length;
+  const next=ap.filter(a=>a.ts>=Date.now()&&apptStatus(a)==='pending').sort((a,b)=>a.ts-b.ts)[0];
+  const last=ap.filter(a=>apptStatus(a)==='done').sort((a,b)=>b.ts-a.ts)[0];
+  const nInf=(p.reports||[]).length;
+  $('#paneFicha').innerHTML=`
+    <div class="card tight">
+      <b style="font-family:var(--serif);font-size:15.5px;display:block;margin-bottom:10px">Resumen</b>
+      <div class="kv"><span class="k">Sesiones realizadas</span><span class="v">${done}</span></div>
+      ${noshow?`<div class="kv"><span class="k">Inasistencias</span><span class="v" style="color:var(--clay)">${noshow}</span></div>`:''}
+      <div class="kv"><span class="k">Informes</span><span class="v">${nInf}</span></div>
+      <div class="kv"><span class="k">Última sesión</span><span class="v">${last?fmtDate(last.ts):'—'}</span></div>
+      <div class="kv"><span class="k">Próximo turno</span><span class="v">${next?fmtDate(next.ts)+' · '+String(new Date(next.ts).getHours()).padStart(2,'0')+':'+String(new Date(next.ts).getMinutes()).padStart(2,'0'):'sin agendar'}</span></div>
+      ${!next?`<button class="btn btn-ghost btn-sm btn-block" style="margin-top:10px" onclick="editAppt(null,new Date(),'${p.id}')">Agendar turno</button>`:''}
+    </div>
+    <div class="card">
+      ${kv('Nombre',p.name)}${kv('Edad',p.edad)}${kv('Fecha de nac.',p.nac)}${kv('DNI',p.dni)}
+      ${kv('Ocupación',p.ocup)}${kv('Teléfono',p.tel)}${kv('Referente',p.referente)}${kv('Escuela/Inst.',p.escuela)}
+    </div>
+    ${p.motivo?`<div class="card"><b style="font-size:13px;color:var(--ink-soft);display:block;margin-bottom:6px">MOTIVO DE CONSULTA</b><p style="margin:0;font-size:14px;white-space:pre-wrap">${esc(p.motivo)}</p></div>`:''}
+    ${p.historia?`<div class="card"><b style="font-size:13px;color:var(--ink-soft);display:block;margin-bottom:6px">HISTORIA / OBSERVACIÓN</b><p style="margin:0;font-size:14px;white-space:pre-wrap">${esc(p.historia)}</p></div>`:''}
+    <div class="navrow">
+      <button class="btn btn-ghost" onclick="editPatient('${p.id}')"><svg viewBox="0 0 24 24" fill="none"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Editar ficha</button>
+      <button class="btn btn-clay" onclick="startReportFlow('${p.id}')"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2L12 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Generar informe</button>
+    </div>
+    <button class="btn btn-danger btn-block btn-sm" style="margin-top:10px" onclick="archivePatient('${p.id}')">Archivar paciente</button>`;
+}
+function archivePatient(id){ if(!confirm('¿Archivar este paciente? No se borra, deja de aparecer en la lista.'))return;
+  const p=db.patients.find(x=>x.id===id);p.archived=true;saveDB();nav('patients');toast('Paciente archivado');}
+
+function renderEvol(p){
+  const items=[...(p.evol||[])].sort((a,b)=>b.ts-a.ts);
+  const box=$('#paneEvol');
+  let html=`<button class="btn btn-primary btn-block btn-sm" onclick="editEvol('${p.id}',null)" style="margin-bottom:16px"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Registrar sesión / nota</button>`;
+  if(!items.length){ html+=`<div class="empty" style="padding:30px 20px"><svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M14 2v6h6" stroke="currentColor" stroke-width="1.5"/></svg><h4>Sin registros aún</h4><p>Anotá la evolución de cada sesión para construir la historia.</p></div>`; }
+  else{
+    html+=`<div class="tl">`+items.map(e=>`
+      <div class="tlitem ${e.kind}"><div class="tldate">${fmtDate(e.ts)}</div>
+      <div class="tlbody"><div class="th"><span class="tlkind ${e.kind}">${e.kind==='session'?'Sesión':(e.kind==='report'?'Informe':'Nota')}</span>${e.title?`<b>${esc(e.title)}</b>`:''}${e.apptId?'<span class="tl-src" title="Generado desde la agenda"><svg viewBox="0 0 24 24" fill="none" width="12" height="12"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2"/></svg>agenda</span>':''}</div>
+      <p>${esc(e.text||'')}</p>
+      ${e.kind!=='report'?`<div class="tl-actions"><button onclick="editEvol('${p.id}','${e.id}')">Editar</button>${e.apptId?`<button onclick="openStatusSheet('${e.apptId}')">Ver turno</button>`:`<button onclick="delEvol('${p.id}','${e.id}')">Eliminar</button>`}</div>`:''}
+      </div></div>`).join('')+`</div>`;
+  }
+  box.innerHTML=html;
+}
+function delEvol(pid,eid){ if(!confirm('¿Eliminar este registro?'))return;
+  const p=db.patients.find(x=>x.id===pid);p.evol=p.evol.filter(e=>e.id!==eid);p.updated=Date.now();saveDB();renderEvol(p);toast('Registro eliminado');}
+
+function renderPatientTests(p){
+  const box=$('#paneTests');
+  const saved=p.testStore||{};
+  const g=p.generalStore||{photos:[],note:''};
+  const keys=Object.keys(saved).filter(k=>saved[k]&&((saved[k].photos&&saved[k].photos.length)||(saved[k].note&&saved[k].note.trim())));
+  let html=`<div class="banner banner-info"><svg viewBox="0 0 24 24" fill="none"><path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/></svg><span>Los tests cargados al generar un informe quedan guardados acá, en el legajo.</span></div>`;
+  if(g.photos&&g.photos.length){
+    html+=`<div class="card tight"><div class="row-between"><b style="font-size:14.5px">Material sin clasificar</b><span class="tag">${g.photos.length} img</span></div>
+      ${g.note?`<p style="font-size:13px;color:var(--ink-soft);margin:6px 0 0;white-space:pre-wrap">${esc(g.note)}</p>`:''}
+      <div class="thumbs">${g.photos.map(s=>`<div class="thumb"><img src="${s}"></div>`).join('')}</div></div>`;
+  }
+  if(!keys.length && !(g.photos&&g.photos.length)){ html+=`<div class="empty" style="padding:30px 20px"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="1.5"/></svg><h4>Sin material cargado</h4><p>Al generar un informe podés adjuntar fotos y resultados de los tests.</p></div>`; }
+  else{
+    html+=keys.map(k=>{const t=saved[k];const nm=TEST_NAME(k);
+      return `<div class="card tight"><div class="row-between"><b style="font-size:14.5px">${esc(nm)}</b></div>
+      ${t.note?`<p style="font-size:13px;color:var(--ink-soft);margin:6px 0 0;white-space:pre-wrap">${esc(t.note)}</p>`:''}
+      ${t.photos&&t.photos.length?`<div class="thumbs">${t.photos.map(s=>`<div class="thumb"><img src="${s}"></div>`).join('')}</div>`:''}</div>`;
+    }).join('');
+  }
+  html+=`<button class="btn btn-clay btn-block" style="margin-top:6px" onclick="startReportFlow('${p.id}')">Cargar material y generar informe</button>`;
+  box.innerHTML=html;
+}
+function renderPatientReports(p){
+  const box=$('#paneInf');
+  const reps=[...(p.reports||[])].sort((a,b)=>b.ts-a.ts);
+  let html='';
+  if(!reps.length){ html=`<div class="empty" style="padding:30px 20px"><svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M14 2v6h6" stroke="currentColor" stroke-width="1.5"/></svg><h4>Sin informes</h4><p>Generá el primer informe de devolución de este paciente.</p><button class="btn btn-clay" onclick="startReportFlow('${p.id}')">Generar informe</button></div>`; }
+  else{
+    html=reps.map(r=>`<div class="card tight" style="cursor:pointer" onclick="viewReport('${p.id}','${r.id}')">
+      <div class="row-between"><div><b style="font-size:14.5px;display:block">${esc(r.data.titulo||'Informe')}</b>
+      <small style="font-size:12px;color:var(--ink-soft)">${fmtDate(r.ts)}</small></div>
+      <svg viewBox="0 0 24 24" fill="none" width="20" height="20" style="color:var(--line)"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div></div>`).join('');
+    html+=`<button class="btn btn-clay btn-block" style="margin-top:6px" onclick="startReportFlow('${p.id}')">Nuevo informe</button>`;
+  }
+  box.innerHTML=html;
+}
+
+/* ---------- Sheets / editores ---------- */
+const scrim=$('#scrim'), sheet=$('#sheet'), sheetContent=$('#sheetContent');
+function openSheet(html){sheetContent.innerHTML=html;scrim.classList.add('on');sheet.classList.add('on');}
+function closeSheet(){scrim.classList.remove('on');sheet.classList.remove('on');stopRec();}
+scrim.onclick=closeSheet;
+
+function editPatient(id){
+  const p=id?db.patients.find(x=>x.id===id):{};
+  openSheet(`<h3>${id?'Editar ficha':'Nuevo paciente'}</h3><p class="sub">Datos básicos del legajo. Podés dictar los campos largos.</p>
+    <div class="grid2">
+      <label class="fld"><span>Nombre y apellido</span><input class="input" id="e_name" value="${esc(p.name)}" placeholder="Nombre completo"></label>
+      <label class="fld"><span>Edad</span><input class="input" id="e_edad" value="${esc(p.edad)}" placeholder="Ej. 21 años"></label>
+    </div>
+    <div class="grid2">
+      <label class="fld"><span>Fecha de nac.</span><input class="input" id="e_nac" value="${esc(p.nac)}" placeholder="dd/mm/aaaa"></label>
+      <label class="fld"><span>DNI</span><input class="input" id="e_dni" value="${esc(p.dni)}"></label>
+    </div>
+    <div class="grid2">
+      <label class="fld"><span>Ocupación / escolaridad</span><input class="input" id="e_ocup" value="${esc(p.ocup)}"></label>
+      <label class="fld"><span>Teléfono</span><input class="input" id="e_tel" value="${esc(p.tel)}"></label>
+    </div>
+    <div class="grid2">
+      <label class="fld"><span>Referente / familia</span><input class="input" id="e_ref" value="${esc(p.referente)}"></label>
+      <label class="fld"><span>Escuela / institución</span><input class="input" id="e_esc" value="${esc(p.escuela)}"></label>
+    </div>
+    <label class="fld"><span>Motivo de consulta</span><textarea class="input" id="e_motivo" placeholder="¿Por qué llega? ¿Quién deriva?">${esc(p.motivo)}</textarea></label>
+    <div class="voicebar"><button class="mic" data-micsheet="e_motivo"><svg viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 003-3V6a3 3 0 00-6 0v6a3 3 0 003 3z" stroke="currentColor" stroke-width="1.8"/><path d="M19 11a7 7 0 01-14 0M12 18v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button><span class="voice-hint">Dictar motivo</span></div>
+    <label class="fld" style="margin-top:12px"><span>Historia / observación clínica</span><textarea class="input" id="e_hist" style="min-height:110px" placeholder="Antecedentes, desarrollo, observación en sesión, sensorialidad, vínculo…">${esc(p.historia)}</textarea></label>
+    <div class="voicebar"><button class="mic" data-micsheet="e_hist"><svg viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 003-3V6a3 3 0 00-6 0v6a3 3 0 003 3z" stroke="currentColor" stroke-width="1.8"/><path d="M19 11a7 7 0 01-14 0M12 18v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button><span class="voice-hint">Dictar historia</span></div>
+    <div style="display:flex;gap:8px;margin-top:18px"><button class="btn btn-ghost" onclick="closeSheet()" style="flex:1">Cancelar</button><button class="btn btn-primary" id="e_save" style="flex:2">Guardar</button></div>`);
+  $('#e_save').onclick=()=>{
+    const name=$('#e_name').value.trim(); if(!name){toast('Poné al menos el nombre');return;}
+    const obj={ name, edad:$('#e_edad').value.trim(), nac:$('#e_nac').value.trim(), dni:$('#e_dni').value.trim(),
+      ocup:$('#e_ocup').value.trim(), tel:$('#e_tel').value.trim(), referente:$('#e_ref').value.trim(),
+      escuela:$('#e_esc').value.trim(), motivo:$('#e_motivo').value.trim(), historia:$('#e_hist').value.trim(), updated:Date.now() };
+    if(id){Object.assign(p,obj);}
+    else{obj.id=uid();obj.created=Date.now();obj.evol=[];obj.reports=[];obj.testStore={};db.patients.push(obj);curPatient=obj;}
+    saveDB(); closeSheet();
+    if(curView==='patient'){openPatient(id||obj.id);} else {nav('patients');}
+    toast(id?'Ficha actualizada':'Paciente creado');
+  };
+}
+
+function editEvol(pid,eid){
+  const p=db.patients.find(x=>x.id===pid);
+  const e=eid?p.evol.find(x=>x.id===eid):{kind:'session',ts:Date.now()};
+  const dt=new Date(e.ts||Date.now());
+  const dstr=dt.toISOString().slice(0,10);
+  openSheet(`<h3>${eid?'Editar registro':'Nueva sesión / nota'}</h3><p class="sub">Queda en la línea de evolución del paciente.</p>
+    <div class="chipset" id="evolKind">
+      <button class="pill sm ${(e.kind||'session')==='session'?'sel':''}" data-k="session">Sesión</button>
+      <button class="pill sm ${e.kind==='note'?'sel':''}" data-k="note">Nota</button>
+    </div>
+    <label class="fld" style="margin-top:12px"><span>Fecha</span><input class="input" type="date" id="ev_date" value="${dstr}"></label>
+    <label class="fld"><span>Título breve <em>(opcional)</em></span><input class="input" id="ev_title" value="${esc(e.title)}" placeholder="Ej. Trabajo con atención sostenida"></label>
+    <label class="fld"><span>Registro</span><textarea class="input" id="ev_text" style="min-height:130px" placeholder="Qué se trabajó, cómo respondió, observaciones, tareas…">${esc(e.text)}</textarea></label>
+    <div class="voicebar"><button class="mic" data-micsheet="ev_text"><svg viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 003-3V6a3 3 0 00-6 0v6a3 3 0 003 3z" stroke="currentColor" stroke-width="1.8"/><path d="M19 11a7 7 0 01-14 0M12 18v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button><span class="voice-hint">Dictar el registro de sesión</span></div>
+    <div style="display:flex;gap:8px;margin-top:18px"><button class="btn btn-ghost" onclick="closeSheet()" style="flex:1">Cancelar</button><button class="btn btn-primary" id="ev_save" style="flex:2">Guardar</button></div>`);
+  let kind=e.kind||'session';
+  $$('#evolKind .pill').forEach(b=>b.onclick=()=>{kind=b.dataset.k;$$('#evolKind .pill').forEach(x=>x.classList.toggle('sel',x===b));});
+  $('#ev_save').onclick=()=>{
+    const text=$('#ev_text').value.trim(); if(!text){toast('Escribí algo en el registro');return;}
+    const ts=new Date($('#ev_date').value+'T12:00').getTime()||Date.now();
+    const obj={kind,ts,title:$('#ev_title').value.trim(),text};
+    if(eid){Object.assign(e,obj);}else{obj.id=uid();p.evol=p.evol||[];p.evol.push(obj);}
+    p.updated=Date.now();saveDB();closeSheet();renderEvol(p);toast('Registro guardado');
+  };
+}
+
+/* ---------- AGENDA ---------- */
+let agRef=new Date(), agSel=new Date();
+function renderAgenda(){
+  $('#agMonth').textContent=MONTHS[agRef.getMonth()]+' '+agRef.getFullYear();
+  const strip=$('#weekstrip');strip.innerHTML='';
+  const base=new Date(agRef);base.setDate(base.getDate()-base.getDay());
+  for(let i=0;i<14;i++){
+    const d=new Date(base);d.setDate(base.getDate()+i);
+    const has=db.appts.some(a=>dayKey(a.ts)===dayKey(d));
+    const cls=['day'];if(dayKey(d)===todayKey())cls.push('today');if(dayKey(d)===dayKey(agSel))cls.push('sel');
+    const el=document.createElement('div');el.className=cls.join(' ');
+    el.innerHTML=`<div class="dn">${DAYS[d.getDay()]}</div><div class="dd">${d.getDate()}</div>${has?'<div class="dot"></div>':''}`;
+    el.onclick=()=>{agSel=new Date(d);renderAgenda();};
+    strip.appendChild(el);
+  }
+  const box=$('#dayAppts');
+  const list=db.appts.filter(a=>dayKey(a.ts)===dayKey(agSel)).sort((a,b)=>a.ts-b.ts);
+  const head=`<div class="row-between" style="margin-bottom:12px"><b style="font-family:var(--serif);font-size:17px;text-transform:capitalize">${DAYS[agSel.getDay()]} ${agSel.getDate()} de ${MONTHS[agSel.getMonth()]}</b>
+    <button class="btn btn-primary btn-sm" onclick="editAppt(null,agSel)"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>`;
+  if(!list.length){box.innerHTML=head+`<div class="empty" style="padding:26px"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.5"/></svg><h4>Día libre</h4><p>No hay turnos agendados.</p></div>`;}
+  else{box.innerHTML=head+list.map(a=>{const p=db.patients.find(x=>x.id===a.patientId);const d=new Date(a.ts);
+    const hm=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    const st=apptStatus(a);
+    return `<div class="appt-item ${st}" onclick="openStatusSheet('${a.id}')"><div class="appt-bar" style="background:${ST_COLOR[st]}"></div>
+      <div class="appt-time">${hm}</div><div class="appt-body"><b>${esc(p?p.name:(a.title||'Turno'))}</b>
+      <small>${a.kind==='eval'?'Evaluación':'Sesión'}${a.note?' · '+esc(a.note):''}</small></div>
+      ${st!=='pending'?`<span class="st-chip ${st}">${ST_LABEL[st]}</span>`:''}</div>`;}).join('');}
+}
+$('#agPrev').onclick=()=>{agRef.setDate(agRef.getDate()-14);renderAgenda();};
+$('#agNext').onclick=()=>{agRef.setDate(agRef.getDate()+14);renderAgenda();};
+
+function editAppt(id,dateObj,prePatient){
+  const a=id?db.appts.find(x=>x.id===id):{ts:(dateObj?new Date(dateObj):new Date()).setHours(9,0,0,0),kind:'session',patientId:prePatient||''};
+  const d=new Date(a.ts);
+  const dstr=d.toISOString().slice(0,10);
+  const tstr=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  const opts=db.patients.filter(p=>!p.archived).map(p=>`<option value="${p.id}" ${a.patientId===p.id?'selected':''}>${esc(p.name)}</option>`).join('');
+  openSheet(`<h3>${id?'Editar turno':'Nuevo turno'}</h3><p class="sub">Agendá una sesión o evaluación.</p>
+    <label class="fld"><span>Paciente</span><select class="input" id="ap_pat"><option value="">— Sin asignar —</option>${opts}</select></label>
+    <div class="chipset" id="ap_kind">
+      <button class="pill sm ${a.kind!=='eval'?'sel':''}" data-k="session">Sesión</button>
+      <button class="pill sm ${a.kind==='eval'?'sel':''}" data-k="eval">Evaluación</button>
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <label class="fld"><span>Fecha</span><input class="input" type="date" id="ap_date" value="${dstr}"></label>
+      <label class="fld"><span>Hora</span><input class="input" type="time" id="ap_time" value="${tstr}"></label>
+    </div>
+    <label class="fld"><span>Nota <em>(opcional)</em></span><input class="input" id="ap_note" value="${esc(a.note)}" placeholder="Ej. Traer informe escolar"></label>
+    <div style="display:flex;gap:8px;margin-top:14px"><button class="btn btn-ghost" onclick="closeSheet()" style="flex:1">Cancelar</button><button class="btn btn-primary" id="ap_save" style="flex:2">Guardar</button></div>
+    ${id?`<button class="btn btn-danger btn-block btn-sm" style="margin-top:10px" onclick="delAppt('${id}')">Eliminar turno</button>`:''}`);
+  let kind=a.kind||'session';
+  $$('#ap_kind .pill').forEach(b=>b.onclick=()=>{kind=b.dataset.k;$$('#ap_kind .pill').forEach(x=>x.classList.toggle('sel',x===b));});
+  $('#ap_save').onclick=()=>{
+    const ts=new Date($('#ap_date').value+'T'+$('#ap_time').value).getTime();
+    if(isNaN(ts)){toast('Revisá fecha y hora');return;}
+    const obj={ts,kind,patientId:$('#ap_pat').value,note:$('#ap_note').value.trim()};
+    if(id){Object.assign(a,obj);}else{obj.id=uid();obj.status='pending';db.appts.push(obj);}
+    saveDB();closeSheet();
+    if(curView==='agenda')renderAgenda();
+    else if(curView==='patient'&&curPatient)switchPane($('.subtab.on')?.dataset.pane||'turnos');
+    else renderHome();
+    toast('Turno guardado');
+  };
+}
+function delAppt(id){ if(!confirm('¿Eliminar este turno?'))return;
+  db.appts=db.appts.filter(a=>a.id!==id);saveDB();closeSheet();
+  if(curView==='agenda')renderAgenda();else renderHome();toast('Turno eliminado');}
+
+/* ---------- MÉTRICAS ---------- */
+function renderMetrics(){
+  const act=db.patients.filter(p=>!p.archived);
+  const ses=db.appts.filter(a=>apptStatus(a)==='done').length;
+  const inf=db.patients.reduce((a,p)=>a+(p.reports||[]).length,0);
+  const done=db.appts.filter(a=>apptStatus(a)==='done').length;
+  const noshow=db.appts.filter(a=>apptStatus(a)==='noshow').length;
+  $('#mPac').textContent=db.patients.length; $('#mSes').textContent=ses;
+  $('#mInf').textContent=inf; $('#mApp').textContent=db.appts.length;
+  const ah=$('#apptStats');
+  if(ah){
+    const tot=db.appts.length;
+    const pend=db.appts.filter(a=>apptStatus(a)==='pending').length;
+    const pct=v=>tot?Math.round(v/tot*100):0;
+    ah.innerHTML=tot?[['Realizadas',done],['No asistió',noshow],['Pendientes',pend]].map(([k,v])=>
+      `<div class="bar-row"><div class="bar-lbl">${k}</div><div class="bar-track"><div class="bar-fill" style="width:${pct(v)}%"></div></div><div class="bar-val">${v}</div></div>`).join('')
+      :'<p class="mini" style="margin:0">Sin turnos aún.</p>';
+  }
+  const mc={};
+  act.forEach(p=>{const m=(p.motivoTag||p.motivo||'Sin especificar').slice(0,26);mc[m]=(mc[m]||0)+1;});
+  const maxM=Math.max(1,...Object.values(mc));
+  const entries=Object.entries(mc).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  $('#motivoBars').innerHTML=entries.length?entries.map(([k,v])=>`<div class="bar-row"><div class="bar-lbl" title="${esc(k)}">${esc(k)}</div><div class="bar-track"><div class="bar-fill" style="width:${v/maxM*100}%"></div></div><div class="bar-val">${v}</div></div>`).join(''):'<p class="mini" style="margin:0">Sin datos aún.</p>';
+  const now=new Date();const buckets=[];
+  for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);buckets.push({lbl:MONTHS[d.getMonth()].slice(0,3),y:d.getFullYear(),m:d.getMonth(),n:0});}
+  db.patients.forEach(p=>(p.evol||[]).forEach(e=>{const d=new Date(e.ts);const b=buckets.find(x=>x.m===d.getMonth()&&x.y===d.getFullYear());if(b)b.n++;}));
+  db.appts.forEach(a=>{const d=new Date(a.ts);const b=buckets.find(x=>x.m===d.getMonth()&&x.y===d.getFullYear());if(b)b.n++;});
+  const maxA=Math.max(1,...buckets.map(b=>b.n));
+  $('#activityBars').innerHTML=buckets.map(b=>`<div class="bar-row"><div class="bar-lbl">${b.lbl}</div><div class="bar-track"><div class="bar-fill" style="width:${b.n/maxA*100}%"></div></div><div class="bar-val">${b.n}</div></div>`).join('');
+}
+
+/* ---------- TESTS catalog ---------- */
+const TEST_CATALOG=[
+  {id:'wurs',ab:'W',name:'WURS-25',desc:'TDAH retrospectivo'},
+  {id:'aq10',ab:'AQ',name:'AQ-10',desc:'Cribado TEA adultos'},
+  {id:'aaa',ab:'AAA',name:'Evaluador Asperger (AAA)',desc:'Criterios de espectro'},
+  {id:'raven',ab:'R',name:'Raven',desc:'Razonamiento no verbal'},
+  {id:'rey',ab:'Rey',name:'Figura de Rey',desc:'Visoconstrucción y memoria'},
+  {id:'bender',ab:'B',name:'Bender',desc:'Organización visomotora'},
+  {id:'dfh',ab:'DFH',name:'DFH / HTP',desc:'Gráfico proyectivo'},
+  {id:'foda',ab:'FO',name:'FODA / autopercepción',desc:'Fortalezas y dificultades'},
+  {id:'diva',ab:'D5',name:'DIVA-5',desc:'Entrevista TDAH'},
+  {id:'ped',ab:'PE',name:'Actividades pedagógicas',desc:'Comprensión y producción'},
+];
+function TEST_NAME(id){const t=TEST_CATALOG.find(x=>x.id===id);if(t)return t.name;return (flowState.customNames&&flowState.customNames[id])||'Instrumento';}
+
+const FOCO=['TDAH/TEA (neurodesarrollo)','Dificultades de aprendizaje','Perfil cognitivo general','Emocional / vincular','Configuración libre'];
+const DEST=['Paciente (mayor de edad)','Familia / referentes','Uso clínico / derivación','Escuela / institución'];
+const RIGOR=['Prudente: hipótesis a confirmar','Equilibrado','Afirmativo (si los datos lo sostienen)'];
+const RIGOR_HINT={
+  'Prudente: hipótesis a confirmar':'Recomendado. Las conclusiones se plantean como hipótesis y se deriva a evaluación especializada. Es el enfoque que mejor protege a quien firma.',
+  'Equilibrado':'Afirma lo que los datos sostienen con claridad y deja como hipótesis lo dudoso.',
+  'Afirmativo (si los datos lo sostienen)':'Redacta conclusiones más definidas. Usar sólo cuando el material es contundente; igual conviene revisar cada afirmación.'
+};
+
+/* ---------- REPORT FLOW ---------- */
+const flowState={ patientId:null, general:{photos:[],note:''}, tests:{}, custom:[], customNames:{}, foco:FOCO[0], dest:DEST[0], rigor:RIGOR[0], extra:'', report:null, step:0 };
+const FLOW_STEPS=['Material','Enfoque','Generar','Informe'];
+
+function startReportFlow(patientId){
+  const key=localStorage.getItem(LS_API);
+  Object.assign(flowState,{patientId,general:{photos:[],note:''},tests:{},custom:[],customNames:{},foco:FOCO[0],dest:DEST[0],rigor:RIGOR[0],extra:'',report:null,step:0});
+  if(patientId){const p=db.patients.find(x=>x.id===patientId);if(p){
+    if(p.testStore)flowState.tests=JSON.parse(JSON.stringify(p.testStore));
+    if(p.generalStore)flowState.general=JSON.parse(JSON.stringify(p.generalStore));
+  }}
+  nav('report'); renderFlow();
+  if(!key){toast('Configurá tu clave de API para poder generar');openSettings();}
+}
+$('#reportBack').onclick=()=>{ if(flowState.step>0&&flowState.step<3){flowState.step--;renderFlow();} else { flowState.patientId?openPatient(flowState.patientId):nav('home'); } };
+
+function renderFlowRail(){
+  $('#flowRail').innerHTML=FLOW_STEPS.map((_,i)=>`<div class="srail ${i<flowState.step?'done':''} ${i===flowState.step?'on':''}"></div>`).join('');
+}
+function renderFlow(){
+  renderFlowRail();
+  const a=$('#flowArea');
+  if(flowState.step===0){a.innerHTML=flowMaterial();initMaterial();}
+  if(flowState.step===1){a.innerHTML=flowEnfoque();initEnfoque();}
+  if(flowState.step===2){a.innerHTML=flowGenerate();initGenerate();}
+  if(flowState.step===3){a.innerHTML=flowResult();initResult();}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function flowMaterial(){
+  const p=flowState.patientId?db.patients.find(x=>x.id===flowState.patientId):null;
+  return `<div class="eyebrow">Paso 1 · Material</div><h1 class="vh">Tests y protocolos</h1>
+    <p class="vlede">${p?'Paciente: <b>'+esc(p.name)+'</b>. ':''}Subí todo junto y la IA identifica cada instrumento, o cargalo clasificado si preferís.</p>
+
+    <div class="card gen-block" id="genBlock">
+      <div class="gen-block-head">
+        <div class="gen-block-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2L12 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+        <div><b style="font-family:var(--serif);font-size:16.5px;display:block;line-height:1.2">Carga general</b>
+        <small style="font-size:12.5px;color:var(--ink-soft)">Subí todas las fotos juntas — la IA reconoce qué es cada una</small></div>
+      </div>
+      <div class="btn-row" style="margin-top:12px">
+        <button class="addbtn" id="gCam"><svg viewBox="0 0 24 24" fill="none"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2v11z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="1.7"/></svg>Foto</button>
+        <button class="addbtn" id="gGal"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.7"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="1.7"/></svg>Galería (varias)</button>
+      </div>
+      <div class="thumbs" id="gThumbs"></div>
+      <label class="fld" style="margin:12px 0 8px"><span>Contexto de lo cargado <em>(opcional)</em></span><textarea class="input" id="gNote" placeholder="Ej. 'Son WURS, AQ-10, Rey y Bender. El Rey está en dos hojas: copia y memoria.'">${esc(flowState.general.note)}</textarea></label>
+      <div class="voicebar"><button class="mic" data-micsheet="gNote"><svg viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 003-3V6a3 3 0 00-6 0v6a3 3 0 003 3z" stroke="currentColor" stroke-width="1.8"/><path d="M19 11a7 7 0 01-14 0M12 18v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button><span class="voice-hint">Dictar contexto</span></div>
+      <p class="mini">Ayuda decir qué instrumentos son, aunque la IA los identifique sola. Si un puntaje no se lee en la foto, aclaralo acá.</p>
+    </div>
+
+    <details class="adv" id="clasDetails" ${usedTests().length?'open':''}>
+      <summary>Cargar clasificado por instrumento <span style="font-weight:400;color:var(--ink-soft)">(opcional)</span></summary>
+      <div class="banner banner-info" style="margin-top:10px"><svg viewBox="0 0 24 24" fill="none"><path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/></svg><span>Usalo si querés anotar el puntaje de cada test por separado. Se guarda en el legajo.</span></div>
+      <div class="test-list" id="testList"></div>
+      <details class="adv"><summary>+ Agregar otro instrumento</summary>
+        <div class="card tight" style="margin-top:8px"><label class="fld" style="margin-bottom:8px"><span>Nombre</span><input class="input" id="customName" placeholder="Ej. WAIS, TAT, Wartegg…"></label><button class="btn btn-ghost btn-sm" id="addCustom">Agregar</button></div></details>
+    </details>
+
+    <div class="banner banner-warn" id="loadWarn" style="display:none;margin-top:14px"><svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 001.7 3h16.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span id="loadWarnTxt"></span></div>
+    <div class="navrow"><button class="btn btn-primary btn-block" id="toEnfoque">Continuar</button></div>`;
+}
+function flowEnfoque(){
+  return `<div class="eyebrow">Paso 2 · Enfoque</div><h1 class="vh">Cómo querés que razone</h1>
+    <p class="vlede">Guía el criterio clínico del motor.</p>
+    <div class="card"><label class="fld"><span>Marco / foco</span></label><div class="pills" id="focoPills"></div></div>
+    <div class="card"><label class="fld"><span>Destinatario</span></label><div class="pills" id="destPills"></div></div>
+    <div class="card"><label class="fld"><span>Rigor en conclusiones</span></label><div class="pills" id="rigorPills"></div><p class="mini" id="rigorHint"></p></div>
+    <div class="card"><label class="fld" style="margin-bottom:8px"><span>Indicaciones extra <em>(opcional)</em></span><textarea class="input" id="f_extra" placeholder="Ej. 'Enfatizar lo sensorial', 'Sugerir ADOS-2', 'No cerrar diagnóstico'.">${esc(flowState.extra)}</textarea></label>
+      <div class="voicebar"><button class="mic" data-micsheet="f_extra"><svg viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 003-3V6a3 3 0 00-6 0v6a3 3 0 003 3z" stroke="currentColor" stroke-width="1.8"/><path d="M19 11a7 7 0 01-14 0M12 18v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button><span class="voice-hint">Dictar indicaciones</span></div></div>
+    <div class="navrow"><button class="btn btn-ghost" id="backMat">Atrás</button><button class="btn btn-primary" id="toGen">Revisar</button></div>`;
+}
+function flowGenerate(){
+  const p=flowState.patientId?db.patients.find(x=>x.id===flowState.patientId):null;
+  const ut=usedTests();const gp=flowState.general.photos.length;
+  const clasPhotos=ut.reduce((a,t)=>a+(t.photos?t.photos.length:0),0);
+  return `<div class="eyebrow">Paso 3 · Generación</div><h1 class="vh">Armar el informe</h1>
+    <p class="vlede">El motor integra todo con criterio psicopedagógico.</p>
+    <div class="card"><b style="font-family:var(--serif);font-size:16px;display:block;margin-bottom:8px">Resumen</b>
+      <div class="kv"><span class="k">Paciente</span><span class="v">${esc(p?p.name:'(sin asignar)')}</span></div>
+      ${gp?`<div class="kv"><span class="k">Imágenes sin clasificar</span><span class="v">${gp} · la IA identifica</span></div>`:''}
+      ${ut.length?`<div class="kv"><span class="k">Instrumentos clasificados</span><span class="v">${ut.length}${clasPhotos?' · '+clasPhotos+' img':''}</span></div>`:''}
+      <div class="kv"><span class="k">Total de imágenes</span><span class="v">${gp+clasPhotos}</span></div>
+      <div class="kv"><span class="k">Foco</span><span class="v">${esc(flowState.foco)}</span></div>
+      <div class="kv"><span class="k">Destinatario</span><span class="v">${esc(flowState.dest)}</span></div>
+      <div class="kv"><span class="k">Rigor</span><span class="v">${esc(flowState.rigor.split(':')[0])}</span></div>
+    </div>
+    <div id="genArea"></div>
+    <div class="navrow" id="genNav"><button class="btn btn-ghost" id="backEnf">Atrás</button>
+      <button class="btn btn-clay" id="btnGenerate" style="flex:2"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2L12 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Generar informe</button></div>`;
+}
+function flowResult(){
+  return `<div class="eyebrow">Informe generado</div><h1 class="vh">Borrador listo</h1>
+    <p class="vlede">Revisá y editá. El criterio final es de quien firma.</p>
+    <div class="banner banner-warn"><svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 001.7 3h16.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span>Borrador asistido por IA. Verificá puntajes, nombres y conclusiones antes de firmar.</span></div>
+    <div class="report"><div class="report-head"><div class="re">Informe de devolución psicopedagógica</div><h3 id="rpName">—</h3><p id="rpMeta">—</p></div>
+      <div class="report-doc" id="rpBody" contenteditable="false"></div>
+      <div class="toolbar">
+        <button class="btn btn-ghost" id="btnEdit"><svg viewBox="0 0 24 24" fill="none"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Editar</button>
+        <button class="btn btn-ghost" id="btnCopy"><svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M5 15V5a2 2 0 012-2h10" stroke="currentColor" stroke-width="1.7"/></svg>Copiar</button>
+        <button class="btn btn-primary" id="btnPrint"><svg viewBox="0 0 24 24" fill="none"><path d="M6 9V3h12v6M6 18H4a2 2 0 01-2-2v-4a2 2 0 012-2h16a2 2 0 012 2v4a2 2 0 01-2 2h-2M6 14h12v7H6v-7z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>PDF</button>
+      </div></div>
+    <div class="navrow"><button class="btn btn-ghost" id="btnRegen">Ajustar</button>${flowState.patientId?'<button class="btn btn-primary" id="btnSaveReport">Guardar en legajo</button>':'<button class="btn btn-primary" id="btnAssign">Asignar a paciente</button>'}</div>`;
+}
+
+function abbr(t){return t.ab||t.name.slice(0,2).toUpperCase();}
+function initMaterial(){
+  const list=$('#testList');
+  const all=[...TEST_CATALOG,...flowState.custom.map(id=>({id,ab:(flowState.customNames[id]||'').slice(0,2).toUpperCase(),name:flowState.customNames[id],desc:'Instrumento agregado'}))];
+  list.innerHTML='';
+  all.forEach(t=>{
+    if(!flowState.tests[t.id])flowState.tests[t.id]={photos:[],note:''};
+    const d=flowState.tests[t.id];
+    const el=document.createElement('div');el.className='test';el.dataset.id=t.id;
+    el.innerHTML=`<div class="test-head"><div class="test-ico">${abbr(t)}</div><div class="test-meta"><b>${esc(t.name)}</b><small>${esc(t.desc)}</small></div><span class="chip-count" style="display:none"></span><svg class="test-chev" viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="test-body"><div class="test-body-inner">
+        <label class="fld" style="margin-bottom:8px"><span>Resultado / observación</span><textarea class="input t-note" placeholder="Ej. 'Copia 16/60 pc10-15; estrategia fragmentaria'.">${esc(d.note)}</textarea></label>
+        <div class="voicebar"><button class="mic" data-mic-test="${t.id}"><svg viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 003-3V6a3 3 0 00-6 0v6a3 3 0 003 3z" stroke="currentColor" stroke-width="1.8"/><path d="M19 11a7 7 0 01-14 0M12 18v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button><span class="voice-hint">Dictar</span></div>
+        <div class="btn-row"><button class="addbtn t-cam"><svg viewBox="0 0 24 24" fill="none"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2v11z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="1.7"/></svg>Foto</button>
+        <button class="addbtn t-gal"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.7"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="1.7"/></svg>Galería</button></div>
+        <div class="thumbs"></div></div></div>`;
+    list.appendChild(el);
+    const head=$('.test-head',el),body=$('.test-body',el);
+    head.onclick=(e)=>{if(e.target.closest('button'))return;const o=el.classList.toggle('open');body.style.maxHeight=o?body.scrollHeight+'px':'0';};
+    const ta=$('.t-note',el);ta.addEventListener('input',()=>{d.note=ta.value;updTest(el,t.id);body.style.maxHeight=body.scrollHeight+'px';});
+    $('.t-cam',el).onclick=()=>pickImg(t.id,el,true);$('.t-gal',el).onclick=()=>pickImg(t.id,el,false);
+    renderThumbs(el,t.id);updTest(el,t.id);
+  });
+  $('#addCustom').onclick=()=>{const v=$('#customName').value.trim();if(!v)return;const id='c_'+uid();flowState.custom.push(id);flowState.customNames[id]=v;$('#customName').value='';initMaterial();};
+
+  /* Bloque de carga general */
+  const gNote=$('#gNote');
+  gNote.addEventListener('input',()=>{flowState.general.note=gNote.value;});
+  $('#gCam').onclick=()=>pickGeneral(true);
+  $('#gGal').onclick=()=>pickGeneral(false);
+  renderGeneralThumbs();
+
+  $('#toEnfoque').onclick=()=>{
+    flowState.general.note=$('#gNote').value.trim();
+    if(!totalPhotos() && !usedTests().length && !flowState.general.note){
+      toast('Cargá al menos una foto o una nota');return;
+    }
+    flowState.step=1;renderFlow();
+  };
+}
+function totalPhotos(){
+  return flowState.general.photos.length + usedTests().reduce((a,t)=>a+((t.photos||[]).length),0);
+}
+function updLoadWarn(){
+  const n=totalPhotos();const w=$('#loadWarn');if(!w)return;
+  if(n>10){w.style.display='flex';$('#loadWarnTxt').textContent=`${n} imágenes es bastante: el informe puede cortarse por longitud o tardar mucho. Si falla, generá en tandas más chicas.`;}
+  else w.style.display='none';
+}
+function pickGeneral(cam){
+  const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.multiple=!cam;if(cam)inp.capture='environment';
+  inp.onchange=async()=>{
+    const box=$('#gThumbs');
+    for(const f of inp.files){try{flowState.general.photos.push(await compress(f));renderGeneralThumbs();}catch(e){toast('No se pudo cargar una imagen');}}
+    updLoadWarn();
+    if(inp.files.length)toast(inp.files.length+' imagen'+(inp.files.length>1?'es':'')+' cargada'+(inp.files.length>1?'s':''));
+  };
+  inp.click();
+}
+function renderGeneralThumbs(){
+  const box=$('#gThumbs');if(!box)return;box.innerHTML='';
+  flowState.general.photos.forEach((src,i)=>{
+    const t=document.createElement('div');t.className='thumb';t.innerHTML=`<img src="${src}"><button>×</button>`;
+    t.querySelector('button').onclick=()=>{flowState.general.photos.splice(i,1);renderGeneralThumbs();updLoadWarn();};
+    box.appendChild(t);
+  });
+  const gb=$('#genBlock');if(gb)gb.classList.toggle('has-data',flowState.general.photos.length>0);
+  updLoadWarn();
+}
+function updTest(el,id){const d=flowState.tests[id];const has=(d.photos.length||d.note.trim());el.classList.toggle('has-data',!!has);
+  const chip=$('.chip-count',el);const parts=[];if(d.photos.length)parts.push(d.photos.length+' foto'+(d.photos.length>1?'s':''));if(d.note.trim())parts.push('nota');
+  if(has){chip.style.display='inline-block';chip.textContent=parts.join(' · ');}else chip.style.display='none';}
+function pickImg(id,el,cam){const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.multiple=!cam;if(cam)inp.capture='environment';
+  inp.onchange=async()=>{for(const f of inp.files){try{flowState.tests[id].photos.push(await compress(f));}catch(e){toast('No se pudo cargar');}}renderThumbs(el,id);updTest(el,id);const b=$('.test-body',el);b.style.maxHeight=b.scrollHeight+'px';};inp.click();}
+function compress(file){return new Promise((res,rej)=>{const img=new Image(),url=URL.createObjectURL(file);img.onload=()=>{const max=1400;let w=img.width,h=img.height;if(w>max||h>max){const r=Math.min(max/w,max/h);w=w*r|0;h=h*r|0;}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(url);res(c.toDataURL('image/jpeg',0.8));};img.onerror=rej;img.src=url;});}
+function renderThumbs(el,id){const box=$('.thumbs',el);box.innerHTML='';flowState.tests[id].photos.forEach((src,i)=>{const t=document.createElement('div');t.className='thumb';t.innerHTML=`<img src="${src}"><button>×</button>`;t.querySelector('button').onclick=()=>{flowState.tests[id].photos.splice(i,1);renderThumbs(el,id);updTest(el,id);const b=$('.test-body',el);b.style.maxHeight=b.scrollHeight+'px';};box.appendChild(t);});}
+
+function initEnfoque(){
+  const mk=(host,arr,key)=>{const h=$(host);h.innerHTML='';arr.forEach(v=>{const b=document.createElement('button');b.className='pill'+(flowState[key]===v?' sel':'');b.textContent=v;b.onclick=()=>{flowState[key]=v;if(key==='rigor')$('#rigorHint').textContent=RIGOR_HINT[v]||'';$$('.pill',h).forEach(x=>x.classList.toggle('sel',x===b));};h.appendChild(b);});};
+  mk('#focoPills',FOCO,'foco');mk('#destPills',DEST,'dest');mk('#rigorPills',RIGOR,'rigor');
+  $('#rigorHint').textContent=RIGOR_HINT[flowState.rigor]||'';
+  $('#f_extra').addEventListener('input',e=>flowState.extra=e.target.value);
+  $('#backMat').onclick=()=>{flowState.step=0;renderFlow();};
+  $('#toGen').onclick=()=>{flowState.extra=$('#f_extra').value.trim();flowState.step=2;renderFlow();};
+}
+
+function usedTests(){
+  const all=[...TEST_CATALOG.map(t=>({id:t.id,name:t.name})),...flowState.custom.map(id=>({id,name:flowState.customNames[id]}))];
+  return all.map(t=>({...t,...flowState.tests[t.id]})).filter(t=>t&&((t.photos&&t.photos.length)||(t.note&&t.note.trim())));
+}
+
+function initGenerate(){
+  $('#backEnf').onclick=()=>{flowState.step=1;renderFlow();};
+  $('#btnGenerate').onclick=()=>generate();
+}
+function buildPrompt(){
+  const p=flowState.patientId?db.patients.find(x=>x.id===flowState.patientId):{};
+  const ut=usedTests();
+  let s=`Sos un asistente experto que redacta INFORMES DE DEVOLUCIÓN PSICOPEDAGÓGICA en español rioplatense formal, con criterio clínico riguroso y ético.
+
+REGLAS CLÍNICAS INNEGOCIABLES:
+- No inventes puntajes ni datos que no estén en el material. Si falta un puntaje, trátalo cualitativamente o indicá que falta.
+- Distinguí SIEMPRE lo que los instrumentos sostienen de lo que es hipótesis. No afirmes diagnósticos que el material no respalde.
+- Un informe psicopedagógico NO diagnostica TEA ni TDAH de forma cerrada: orienta y deriva a evaluación especializada (ADOS-2, ADI-R, psiquiatría de neurodesarrollo).
+- Si los cribados dan bajo el corte pero hay observación clínica relevante, explicá la posible subestimación (ej. baja conciencia de dificultades) sin forzar el dato.
+- No reinterpretes datos para forzar una conclusión. Mostrá todos los resultados con honestidad, incluidos los que no acompañan la hipótesis principal.
+- Lenguaje respetuoso, no estigmatizante.
+- Técnicas gráficas sin baremo adulto (DFH, Rey gráfico, Bender): aclarar lectura cualitativa.
+
+RIGOR PEDIDO: ${flowState.rigor}. ${RIGOR_HINT[flowState.rigor]||''}
+FOCO: ${flowState.foco}. DESTINATARIO: ${flowState.dest} (ajustá tono y nivel técnico).
+
+DATOS DEL PACIENTE:
+- Nombre: ${p.name||'(no informado)'} · Edad: ${p.edad||'(s/d)'} · Nac: ${p.nac||'—'} · DNI: ${p.dni||'—'}
+- Ocupación/escolaridad: ${p.ocup||'—'} · Escuela/Inst: ${p.escuela||'—'}
+- Profesional: ${db.profile.name||'—'}${db.profile.matricula?' (Mat. '+db.profile.matricula+')':''} · Centro: ${db.profile.centro||'—'}
+
+MOTIVO DE CONSULTA:
+${p.motivo||'(no informado)'}
+
+HISTORIA Y OBSERVACIÓN CLÍNICA:
+${p.historia||'(no informada)'}
+`;
+  if(p.evol&&p.evol.length){ s+=`\nNOTAS DE EVOLUCIÓN RECIENTES (contexto):\n`+[...p.evol].sort((a,b)=>b.ts-a.ts).slice(0,5).map(e=>`- ${fmtDate(e.ts)}${e.title?' · '+e.title:''}: ${e.text}`).join('\n')+'\n'; }
+  const gp=flowState.general.photos.length;
+  if(gp||flowState.general.note){
+    s+=`\nMATERIAL SIN CLASIFICAR (${gp} imagen(es)):`;
+    s+=`\nEstas imágenes se subieron TODAS JUNTAS, sin indicar a qué instrumento corresponde cada una. Tu tarea incluye IDENTIFICARLAS.`;
+    if(flowState.general.note)s+=`\nContexto que aporta la profesional: ${flowState.general.note}`;
+    s+=`\nPara cada imagen: reconocé de qué instrumento se trata (por el encabezado, la consigna, el formato de respuesta, el tipo de dibujo, la grilla de puntajes, etc.), extraé los puntajes o marcas y agrupá la información por instrumento.
+Si una imagen NO se puede identificar con confianza, decilo explícitamente en las notas metodológicas en vez de adivinar. Si dudás entre dos instrumentos, nombrá la duda.
+Si varias imágenes son del mismo instrumento (ej. varias hojas), integralas como uno solo.`;
+  }
+  if(ut.length){
+    s+=`\n\nINSTRUMENTOS YA CLASIFICADOS POR LA PROFESIONAL:`;
+    ut.forEach(t=>{s+=`\n• ${t.name}: ${(t.note||'').trim()||'(ver imágenes)'}${t.photos&&t.photos.length?` [${t.photos.length} imagen(es) adjunta(s) para leer y verificar]`:''}`;});
+    if(gp)s+=`\n(Las imágenes de estos instrumentos van DESPUÉS de las sin clasificar, en el orden listado.)`;
+  }
+  if(flowState.extra)s+=`\n\nINDICACIONES EXTRA:\n${flowState.extra}`;
+  s+=`
+
+TAREA:
+1) Leé TODAS las imágenes adjuntas. Si hay material sin clasificar, identificá primero de qué instrumento es cada imagen.
+2) Extraé y verificá los puntajes. Recontá los cribados (ej. AQ-10, AAA) y señalá si algún conteo no coincide con lo anotado.
+3) Si algo no se lee o no se puede identificar, decilo; NO lo inventes.
+4) Redactá un informe COMPLETO y bien estructurado.
+
+Incluí una sección temprana "Instrumentos administrados" que liste qué instrumentos identificaste y, cuando corresponda, aclare cuáles fueron reconocidos a partir del material sin clasificar y con qué grado de certeza.
+
+DEVOLVÉ ÚNICAMENTE JSON válido (sin markdown ni comillas triples):
+{"titulo":"string","subtitulo":"nombre + edad + fecha","secciones":[{"h":"Título","html":"<p>…</p><ul><li>…</li></ul> y tablas con <table><tr><th>/<td>. Sin estilos inline ni encabezados dentro del html."}]}
+Secciones sugeridas (adaptá): Datos del paciente, Motivo, Instrumentos administrados, Resultados (con tabla puntaje/corte/interpretación), Notas metodológicas e interpretativas, Habilidades y recursos, Dificultades observadas, Integración del perfil, Orientación clínica funcional (hipótesis, no diagnóstico cerrado), Recomendaciones, Conclusión. Cerrá con nota de que es orientativo y no reemplaza evaluación médica especializada.
+Sé completo pero no redundante: el informe debe entrar entero en la respuesta.`;
+  return s;
+}
+/* Parseo robusto: si el JSON viene cortado, rescata las secciones completas */
+function parseReport(text,truncado){
+  let clean=text.replace(/^```json\s*/i,'').replace(/```\s*$/,'').trim();
+  const a=clean.indexOf('{');if(a>0)clean=clean.slice(a);
+  try{ return JSON.parse(clean); }catch(e){ /* sigue al rescate */ }
+  const b=clean.lastIndexOf('}');
+  if(b>0){ try{ return JSON.parse(clean.slice(0,b+1)); }catch(e2){} }
+  // Rescate: extraer título y las secciones que hayan quedado completas
+  const rep={titulo:'Informe de devolución psicopedagógica',subtitulo:'',secciones:[]};
+  const mt=clean.match(/"titulo"\s*:\s*"((?:[^"\\]|\\.)*)"/); if(mt)rep.titulo=JSON.parse('"'+mt[1]+'"');
+  const ms=clean.match(/"subtitulo"\s*:\s*"((?:[^"\\]|\\.)*)"/); if(ms)rep.subtitulo=JSON.parse('"'+ms[1]+'"');
+  const re=/\{\s*"h"\s*:\s*"((?:[^"\\]|\\.)*)"\s*,\s*"html"\s*:\s*"((?:[^"\\]|\\.)*)"\s*\}/g;
+  let m; while((m=re.exec(clean))!==null){
+    try{ rep.secciones.push({h:JSON.parse('"'+m[1]+'"'),html:JSON.parse('"'+m[2]+'"')}); }catch(e3){}
+  }
+  if(!rep.secciones.length) throw new Error(truncado
+    ? 'La respuesta se cortó por longitud y no se pudo recuperar. Probá con menos imágenes por informe.'
+    : 'La respuesta no tuvo el formato esperado. Probá generar de nuevo.');
+  rep.secciones.push({h:'⚠ Informe incompleto',
+    html:'<p>La generación se cortó por longitud, así que este borrador puede estar incompleto (faltarían las secciones finales). Revisalo y completá lo que falte, o generá de nuevo cargando menos imágenes por informe.</p>'});
+  return rep;
+}
+const GEN_MSGS=['Leyendo los protocolos…','Verificando puntajes…','Integrando el perfil…','Contrastando hipótesis…','Redactando…','Puliendo la devolución…'];
+async function generate(){
+  const key=localStorage.getItem(LS_API); if(!key){openSettings();toast('Configurá tu clave de API');return;}
+  $('#genNav').style.display='none';
+  $('#genArea').innerHTML=`<div class="card genwrap"><div class="spinner"></div><div class="gen-status" id="genStatus">Preparando…</div></div>`;
+  let i=0;const st=$('#genStatus');const iv=setInterval(()=>{st.textContent=GEN_MSGS[i++%GEN_MSGS.length];},1600);
+  try{
+    const model=localStorage.getItem(LS_MODEL)||'claude-sonnet-4-6';
+    const ut=usedTests();const content=[{type:'text',text:buildPrompt()}];
+    const push=src=>{const m=src.match(/^data:(image\/\w+);base64,(.+)$/);if(m)content.push({type:'image',source:{type:'base64',media_type:m[1],data:m[2]}});};
+    flowState.general.photos.forEach(push);
+    ut.forEach(t=>(t.photos||[]).forEach(push));
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model,max_tokens:8192,messages:[{role:'user',content}]})});
+    if(!res.ok){let msg='Error '+res.status;try{const j=await res.json();msg=(j.error&&j.error.message)||msg;}catch(e){}
+      if(res.status===401)msg='Clave de API inválida. Revisala en ajustes.';if(res.status===429)msg='Límite alcanzado. Esperá un momento.';if(res.status===529)msg='API saturada. Probá de nuevo.';throw new Error(msg);}
+    const data=await res.json();
+    const text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();
+    const truncado = data.stop_reason==='max_tokens';
+    flowState.report=parseReport(text,truncado);
+    clearInterval(iv);
+    if(flowState.patientId){const p=db.patients.find(x=>x.id===flowState.patientId);p.testStore=JSON.parse(JSON.stringify(flowState.tests));p.generalStore=JSON.parse(JSON.stringify(flowState.general));p.updated=Date.now();saveDB();}
+    flowState.step=3;renderFlow();
+    toast(truncado?'Informe recuperado (se cortó al final)':'Informe generado');
+  }catch(e){clearInterval(iv);$('#genNav').style.display='flex';
+    $('#genArea').innerHTML=`<div class="banner banner-warn" style="margin-top:10px"><svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4M12 17h.01M10.3 3.9L2 18a2 2 0 001.7 3h16.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span>${esc(e.message||'No se pudo generar')}</span></div>`;}
+}
+
+function initResult(){ renderReportDoc(flowState.report);
+  $('#btnEdit').onclick=toggleEdit;$('#btnCopy').onclick=copyReport;$('#btnPrint').onclick=()=>printReport(flowState.report);
+  $('#btnRegen').onclick=()=>{flowState.step=1;renderFlow();};
+  const sv=$('#btnSaveReport');if(sv)sv.onclick=saveReportToPatient;
+  const asg=$('#btnAssign');if(asg)asg.onclick=assignReport;
+}
+function renderReportDoc(rep){
+  if(!rep)return;
+  $('#rpName').textContent=rep.titulo||'Informe de devolución psicopedagógica';
+  const p=flowState.patientId?db.patients.find(x=>x.id===flowState.patientId):{};
+  $('#rpMeta').textContent=rep.subtitulo||[p.name,p.edad,fmtDate(Date.now())].filter(Boolean).join(' · ');
+  const body=$('#rpBody');body.innerHTML='';
+  (rep.secciones||[]).forEach(s=>{const h=document.createElement('h4');h.textContent=s.h;body.appendChild(h);const d=document.createElement('div');d.innerHTML=s.html||'';while(d.firstChild)body.appendChild(d.firstChild);});
+}
+function toggleEdit(){const b=$('#rpBody'),on=b.getAttribute('contenteditable')==='true';b.setAttribute('contenteditable',(!on).toString());
+  $('#btnEdit').innerHTML=on?`<svg viewBox="0 0 24 24" fill="none"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Editar`:`<svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Listo`;
+  if(on){toast('Cambios guardados en pantalla');}else{b.focus();toast('Editá directamente el texto');}}
+async function copyReport(){const t=$('#rpName').textContent+'\n'+$('#rpMeta').textContent+'\n\n'+$('#rpBody').innerText;try{await navigator.clipboard.writeText(t);toast('Copiado');}catch(e){toast('No se pudo copiar');}}
+function saveReportToPatient(){
+  const p=db.patients.find(x=>x.id===flowState.patientId);if(!p)return;
+  const rep=JSON.parse(JSON.stringify(flowState.report));rep._html=$('#rpBody').innerHTML;
+  p.reports=p.reports||[];p.reports.push({id:uid(),ts:Date.now(),data:rep});
+  p.evol=p.evol||[];p.evol.push({id:uid(),ts:Date.now(),kind:'report',title:rep.titulo||'Informe',text:'Se generó un informe de devolución.'});
+  p.updated=Date.now();saveDB();toast('Informe guardado en el legajo');openPatient(p.id);switchPane('inf');
+}
+function assignReport(){
+  const opts=db.patients.filter(p=>!p.archived).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
+  openSheet(`<h3>Asignar informe</h3><p class="sub">Elegí a qué paciente guardar este informe.</p>
+    <label class="fld"><span>Paciente</span><select class="input" id="asg_pat">${opts||'<option value="">Sin pacientes</option>'}</select></label>
+    <button class="btn btn-primary btn-block" id="asg_ok">Guardar en legajo</button>`);
+  $('#asg_ok').onclick=()=>{const pid=$('#asg_pat').value;if(!pid){toast('Creá un paciente primero');return;}flowState.patientId=pid;closeSheet();saveReportToPatient();};
+}
+function viewReport(pid,rid){
+  const p=db.patients.find(x=>x.id===pid);const r=p.reports.find(x=>x.id===rid);if(!r)return;
+  flowState.patientId=pid;flowState.report=r.data;flowState.step=3;nav('report');renderFlow();
+  if(r.data._html)setTimeout(()=>{const bd=$('#rpBody');if(bd)bd.innerHTML=r.data._html;},60);
+}
+function printReport(rep){
+  if(!rep)return;const w=window.open('','_blank');const bodyHTML=$('#rpBody')?$('#rpBody').innerHTML:'';
+  const p=flowState.patientId?db.patients.find(x=>x.id===flowState.patientId):{};
+  w.document.write(`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>${esc(rep.titulo||'Informe')}</title>
+  <style>@page{margin:2cm}body{font-family:Georgia,serif;color:#23282A;line-height:1.6;font-size:12pt;max-width:720px;margin:0 auto}
+  .hd{text-align:center;border-bottom:2px solid #3F534B;padding-bottom:14px;margin-bottom:22px}
+  .hd .k{font-size:9pt;letter-spacing:.18em;text-transform:uppercase;color:#5B7268;font-family:Arial,sans-serif}
+  .hd h1{font-size:19pt;margin:6px 0 2px;color:#3F534B}.hd p{margin:0;font-size:10.5pt;color:#5A6360}
+  h4,h2{color:#3F534B;font-size:13.5pt;margin:20px 0 6px;border-bottom:1px solid #D8D3C6;padding-bottom:3px}
+  p{margin:0 0 10px;text-align:justify}ul{margin:0 0 12px;padding-left:22px}li{margin-bottom:4px}strong{color:#3F534B}
+  table{width:100%;border-collapse:collapse;margin:6px 0 14px;font-size:10.5pt}th{background:#3F534B;color:#fff;text-align:left;padding:6px 8px}
+  td{border:1px solid #D8D3C6;padding:6px 8px}tr:nth-child(even) td{background:#F4F1EA}
+  .foot{margin-top:34px;border-top:1px solid #D8D3C6;padding-top:10px;font-size:9pt;color:#5A6360}
+  .sign{margin-top:48px;display:flex;justify-content:space-between;gap:40px}.sign div{flex:1;border-top:1px solid #23282A;padding-top:6px;font-size:10pt;text-align:center}
+  @media print{button{display:none}}</style></head><body>
+  <div class="hd"><div class="k">Informe de devolución psicopedagógica</div><h1>${esc(rep.titulo||'Informe')}</h1>
+  <p>${esc(rep.subtitulo||[p.name,p.edad].filter(Boolean).join(' · '))}</p>${db.profile.centro?`<p>${esc(db.profile.centro)}</p>`:''}</div>
+  ${bodyHTML}
+  <div class="sign"><div>Firma del paciente<br><small>Aclaración / DNI</small></div><div>${esc(db.profile.name||'Firma profesional')}<br><small>${db.profile.matricula?'Mat. '+esc(db.profile.matricula):'Matrícula'}</small></div></div>
+  <div class="foot">Informe orientativo de carácter psicopedagógico. No reemplaza evaluación médica, psiquiátrica o neurológica especializada.</div>
+  </body></html>`);
+  w.document.close();setTimeout(()=>{w.focus();w.print();},400);
+}
+
+/* ---------- Voz ---------- */
+let recog=null,recBtn=null;const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+function startRec(getset,btn){if(!SR){toast('Tu navegador no soporta dictado');return;}if(recog){stopRec();return;}
+  recog=new SR();recog.lang='es-AR';recog.continuous=true;recog.interimResults=true;recBtn=btn;recBtn.classList.add('rec');
+  let base=getset.get();
+  recog.onresult=(e)=>{let fin='',int='';for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i];if(r.isFinal)fin+=r[0].transcript;else int+=r[0].transcript;}if(fin)base=(base?base+' ':'')+fin.trim();getset.set((base||'')+(int?' '+int:''));};
+  recog.onerror=(e)=>{toast(e.error==='not-allowed'?'Permití el micrófono':'Error de dictado');stopRec();};
+  recog.onend=()=>{if(recBtn)recBtn.classList.remove('rec');recog=null;};
+  try{recog.start();toast('Escuchando… tocá para parar');}catch(e){}}
+function stopRec(){if(recog){recog.stop();}if(recBtn)recBtn.classList.remove('rec');}
+document.addEventListener('click',e=>{
+  const m=e.target.closest('[data-micsheet]');if(m){const el=document.getElementById(m.dataset.micsheet);if(el)startRec({get:()=>el.value,set:v=>{el.value=v;el.dispatchEvent(new Event('input'));}},m);return;}
+  const mt=e.target.closest('[data-mic-test]');if(mt){const id=mt.dataset.micTest;const card=mt.closest('.test');const ta=$('.t-note',card);startRec({get:()=>ta.value,set:v=>{ta.value=v;flowState.tests[id].note=v;const b=$('.test-body',card);b.style.maxHeight=b.scrollHeight+'px';}},mt);return;}
+});
+
+/* ---------- Settings + Backup ---------- */
+function openSettings(){
+  const key=localStorage.getItem(LS_API)||'';const model=localStorage.getItem(LS_MODEL)||'claude-sonnet-4-6';
+  const perm=('Notification' in window)?Notification.permission:'unsupported';
+  const notifOK=perm==='granted';
+  const notifTxt=perm==='granted'?'Avisos activados':(perm==='denied'?'Bloqueados en el navegador':(perm==='unsupported'?'No soportado en este navegador':'Sin activar'));
+  openSheet(`<h3>Configuración</h3><p class="sub">Perfil profesional, clave de API y datos del dispositivo.</p>
+    <div class="card tight"><b style="font-size:13px;color:var(--ink-soft);display:block;margin-bottom:8px">PERFIL PROFESIONAL</b>
+      <label class="fld"><span>Nombre</span><input class="input" id="pf_name" value="${esc(db.profile.name)}" placeholder="Nombre — Psicopedagoga"></label>
+      <div class="grid2"><label class="fld"><span>Matrícula</span><input class="input" id="pf_mat" value="${esc(db.profile.matricula)}"></label>
+      <label class="fld"><span>Centro</span><input class="input" id="pf_cen" value="${esc(db.profile.centro)}"></label></div>
+      <button class="btn btn-ghost btn-sm" id="pf_save">Guardar perfil</button>
+    </div>
+    <div class="card tight"><b style="font-size:13px;color:var(--ink-soft);display:block;margin-bottom:8px">MOTOR DE IA</b>
+      <label class="fld"><span>Clave de API de Anthropic</span><div class="keyrow"><input class="input" id="apiKey" type="password" value="${esc(key)}" placeholder="sk-ant-..." autocomplete="off"><button class="btn btn-ghost btn-sm" id="toggleKey">Ver</button></div></label>
+      <div class="status-dot ${key?'ok':''}" id="keyStatus"><i></i><span>${key?'Clave configurada':'Sin clave'}</span></div>
+      <div class="row-between" style="margin-top:12px"><span style="font-size:13px;font-weight:600">Modelo</span>
+        <select class="input" id="modelSel" style="width:auto;min-width:170px"><option value="claude-sonnet-4-6" ${model==='claude-sonnet-4-6'?'selected':''}>Sonnet 4.6</option><option value="claude-opus-4-8" ${model==='claude-opus-4-8'?'selected':''}>Opus 4.8</option></select></div>
+      <div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-primary btn-sm" id="saveKey" style="flex:1">Guardar clave</button><button class="btn btn-ghost btn-sm" id="clearKey">Borrar</button></div>
+      <p class="mini">Se guarda solo en este dispositivo. La obtenés en <a class="link" href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>. El uso tiene costo por consumo.</p>
+    </div>
+    <div class="card tight"><b style="font-size:13px;color:var(--ink-soft);display:block;margin-bottom:8px">ACCESO</b>
+      <div class="kv"><span class="k">Usuario</span><span class="v">${esc(userName()||'(cargá tu perfil)')}</span></div>
+      <div class="grid2" style="margin-top:12px">
+        <label class="fld"><span>Nueva clave</span><input class="input" id="pin_new" type="password" inputmode="numeric" maxlength="8" placeholder="4 a 8 números"></label>
+        <label class="fld"><span>Repetir</span><input class="input" id="pin_new2" type="password" inputmode="numeric" maxlength="8"></label>
+      </div>
+      <div style="display:flex;gap:8px"><button class="btn btn-primary btn-sm" id="pin_save" style="flex:1">Cambiar clave</button><button class="btn btn-ghost btn-sm" id="pin_reset">Restablecer</button></div>
+      <p class="mini">Clave por defecto: <b>8989</b>. El usuario es el nombre de tu perfil profesional. La clave evita accesos casuales; no reemplaza el bloqueo del teléfono.</p>
+    </div>
+    <div class="card tight"><b style="font-size:13px;color:var(--ink-soft);display:block;margin-bottom:8px">AVISOS DE TURNOS</b>
+      <p class="mini" style="margin-top:0">Recibís dos avisos por sesión: al empezar el día y una hora antes. Dejan de sonar cuando marcás la sesión como realizada.</p>
+      <div class="status-dot ${notifOK?'ok':''}" id="notifStatus"><i></i><span>${notifTxt}</span></div>
+      <button class="btn btn-ghost btn-sm btn-block" id="notif_ask" style="margin-top:10px">Activar avisos del sistema</button>
+      <div class="row-between" style="margin-top:12px"><span style="font-size:13px;font-weight:600">Sonido de alerta</span>
+        <input type="checkbox" id="soundTgl" ${db.profile.sound!==false?'checked':''} style="width:20px;height:20px;accent-color:var(--sage)"></div>
+      <p class="mini"><b>Importante:</b> los avisos solo llegan con la app abierta o en una pestaña de fondo. Si la cerrás por completo, el navegador no puede despertarla. Para turnos críticos, usá también el calendario del teléfono.</p>
+    </div>
+    <p class="mini"><b>Privacidad:</b> todos los datos de pacientes se guardan solo en este dispositivo. Las imágenes se envían a la API de Anthropic únicamente al generar un informe. Respetá el consentimiento del paciente y la normativa de datos de salud.</p>`);
+  /* --- acceso --- */
+  $('#pin_save').onclick=()=>{
+    const a=$('#pin_new').value.trim(),b=$('#pin_new2').value.trim();
+    if(!/^\d{4,8}$/.test(a)){toast('La clave debe tener de 4 a 8 números');return;}
+    if(a!==b){toast('Las claves no coinciden');return;}
+    localStorage.setItem(LS_PIN,a);$('#pin_new').value='';$('#pin_new2').value='';
+    toast('Clave actualizada');
+  };
+  $('#pin_reset').onclick=()=>{
+    if(!confirm('¿Volver la clave al valor por defecto (8989)?'))return;
+    localStorage.removeItem(LS_PIN);toast('Clave restablecida a 8989');
+  };
+  $('#notif_ask').onclick=async()=>{
+    const r=await notifyPermission();
+    const s=$('#notifStatus');
+    if(r==='granted'){s.classList.add('ok');s.querySelector('span').textContent='Avisos activados';toast('Avisos activados');pushNotif('Andamiaje','Los avisos de turnos están activos.');}
+    else if(r==='denied'){s.querySelector('span').textContent='Bloqueados en el navegador';toast('Están bloqueados: habilitalos desde los ajustes del navegador');}
+    else if(r==='unsupported'){toast('Este navegador no soporta avisos');}
+  };
+  const snd=$('#soundTgl');
+  if(snd)snd.onchange=()=>{db.profile.sound=snd.checked;saveDB();if(snd.checked)beep();};
+  $('#pf_save').onclick=()=>{db.profile={name:$('#pf_name').value.trim(),matricula:$('#pf_mat').value.trim(),centro:$('#pf_cen').value.trim()};saveDB();toast('Perfil guardado');renderHome();};
+  $('#toggleKey').onclick=()=>{const k=$('#apiKey');k.type=k.type==='password'?'text':'password';$('#toggleKey').textContent=k.type==='password'?'Ver':'Ocultar';};
+  $('#saveKey').onclick=()=>{const v=$('#apiKey').value.trim();if(!v){toast('Pegá una clave');return;}localStorage.setItem(LS_API,v);localStorage.setItem(LS_MODEL,$('#modelSel').value);$('#keyStatus').classList.add('ok');$('#keyStatus').querySelector('span').textContent='Clave configurada';toast('Clave guardada');renderHome();};
+  $('#clearKey').onclick=()=>{localStorage.removeItem(LS_API);$('#apiKey').value='';$('#keyStatus').classList.remove('ok');$('#keyStatus').querySelector('span').textContent='Sin clave';toast('Clave borrada');};
+  $('#modelSel').onchange=()=>localStorage.setItem(LS_MODEL,$('#modelSel').value);
+}
+function openBackup(){
+  const nP=db.patients.length,nA=db.appts.length,nI=db.patients.reduce((a,p)=>a+(p.reports||[]).length,0);
+  openSheet(`<h3>Respaldo de datos</h3><p class="sub">Exportá todo a un archivo para no perder nada o pasarlo a otro dispositivo.</p>
+    <div class="card tight"><div class="kv"><span class="k">Pacientes</span><span class="v">${nP}</span></div><div class="kv"><span class="k">Turnos</span><span class="v">${nA}</span></div><div class="kv"><span class="k">Informes</span><span class="v">${nI}</span></div></div>
+    <button class="btn btn-primary btn-block" id="bkExport" style="margin-bottom:10px"><svg viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Exportar respaldo (.json)</button>
+    <button class="btn btn-ghost btn-block" id="bkImport"><svg viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>Importar respaldo</button>
+    <p class="mini"><b>Importante:</b> guardá respaldos con frecuencia. Si borrás los datos del navegador o desinstalás, la información se pierde. El archivo contiene datos de salud: guardalo en un lugar seguro.</p>
+    <div class="divider"></div>
+    <button class="btn btn-danger btn-block btn-sm" id="bkWipe">Borrar todos los datos</button>`);
+  $('#bkExport').onclick=exportBackup;
+  $('#bkImport').onclick=importBackup;
+  $('#bkWipe').onclick=()=>{if(!confirm('¿Borrar TODOS los pacientes, turnos e informes? Esto no se puede deshacer. Exportá un respaldo antes.'))return;if(!confirm('Confirmá una vez más: se borra todo.'))return;db={patients:[],appts:[],profile:db.profile,meta:{created:Date.now()}};saveDB();closeSheet();nav('home');toast('Datos borrados');};
+}
+function exportBackup(){
+  const blob=new Blob([JSON.stringify(Object.assign({},db,{_v:2,_exported:Date.now()}),null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  const d=new Date();a.href=url;a.download=`andamiaje_respaldo_${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.json`;
+  a.click();URL.revokeObjectURL(url);toast('Respaldo descargado');
+}
+function importBackup(){
+  const inp=document.createElement('input');inp.type='file';inp.accept='.json,application/json';
+  inp.onchange=()=>{const f=inp.files[0];if(!f)return;const r=new FileReader();
+    r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.patients)throw 0;
+      if(!confirm(`El respaldo tiene ${d.patients.length} paciente(s). ¿Reemplazar los datos actuales por los del archivo?`))return;
+      db={patients:d.patients||[],appts:d.appts||[],profile:d.profile||db.profile,meta:d.meta||{created:Date.now()}};
+      saveDB();closeSheet();nav('home');toast('Respaldo importado');}catch(e){toast('Archivo inválido');}};
+    r.readAsText(f);};
+  inp.click();
+}
+
+/* ---------- Botones globales ---------- */
+$('#gateBtn').onclick=tryUnlock;
+$('#gatePin').addEventListener('keydown',e=>{if(e.key==='Enter')tryUnlock();});
+$('#gatePin').addEventListener('input',()=>{$('#gateErr').textContent='';});
+$('#btnLock').onclick=()=>{ if(!userName()){toast('Cargá tu perfil en ajustes primero');return;} lockApp(); };
+$('#btnSettings').onclick=openSettings;
+$('#btnBackup').onclick=openBackup;
+$('#qaNewPatient').onclick=()=>editPatient(null);
+$('#qaNewReport').onclick=()=>startReportFlow(null);
+$('#qaNewAppt').onclick=()=>editAppt(null,new Date());
+$('#btnAddPatient').onclick=()=>editPatient(null);
+$('#pSearch').addEventListener('input',renderPatients);
+$$('.subtab').forEach(t=>t.onclick=()=>switchPane(t.dataset.pane));
+
+/* ============================================================
+   ESTADOS DE TURNO
+============================================================ */
+const ST_LABEL={pending:'Pendiente',done:'Realizada',noshow:'No asistió',cancel:'Cancelada'};
+const ST_COLOR={pending:'var(--sage)',done:'var(--sage-deep)',noshow:'var(--clay)',cancel:'var(--ink-soft)'};
+function apptStatus(a){return a.status||'pending';}
+
+function setApptStatus(id,status){
+  const a=db.appts.find(x=>x.id===id);if(!a)return;
+  const prev=apptStatus(a);
+  a.status=status;
+  const p=db.patients.find(x=>x.id===a.patientId);
+  if(status==='done'){
+    a.doneAt=Date.now();
+    // registrar en la evolución, vinculada al turno
+    if(p && !a.evolId){
+      const e={id:uid(),ts:a.ts,kind:'session',apptId:a.id,
+        title:a.kind==='eval'?'Evaluación':'Sesión',
+        text:'Sesión realizada (desde agenda).'+(a.note?' '+a.note:'')};
+      p.evol=p.evol||[];p.evol.push(e);a.evolId=e.id;p.updated=Date.now();
+    }
+  } else if(prev==='done' && a.evolId && p){
+    // dejó de estar realizada => quitar la evolución que generó la agenda
+    p.evol=(p.evol||[]).filter(e=>e.id!==a.evolId);
+    a.evolId=null;a.doneAt=null;p.updated=Date.now();
+  }
+  if(status!=='pending'){ dismissAlertsFor(id); }
+  saveDB();
+  if(curView==='agenda')renderAgenda();
+  else if(curView==='patient'&&curPatient){ const pane=$('.subtab.on')?.dataset.pane; switchPane(pane||'ficha'); }
+  else renderHome();
+  toast(status==='done'?'Sesión computada como realizada':'Turno: '+ST_LABEL[status]);
+}
+function openStatusSheet(id){
+  const a=db.appts.find(x=>x.id===id);if(!a)return;
+  const p=db.patients.find(x=>x.id===a.patientId);
+  const d=new Date(a.ts);const hm=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  const cur=apptStatus(a);
+  openSheet(`<h3>${esc(p?p.name:'Turno')}</h3><p class="sub">${DAYS[d.getDay()]} ${d.getDate()} de ${MONTHS[d.getMonth()]} · ${hm} · ${a.kind==='eval'?'Evaluación':'Sesión'}</p>
+    <b style="font-size:13px;color:var(--ink-soft);display:block;margin-bottom:8px">ESTADO DE LA SESIÓN</b>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="btn ${cur==='done'?'btn-primary':'btn-ghost'}" onclick="setApptStatus('${id}','done');closeSheet()"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Realizada</button>
+      <button class="btn ${cur==='noshow'?'btn-clay':'btn-ghost'}" onclick="setApptStatus('${id}','noshow');closeSheet()">No asistió</button>
+      <button class="btn ${cur==='cancel'?'btn-clay':'btn-ghost'}" onclick="setApptStatus('${id}','cancel');closeSheet()">Cancelada</button>
+      ${cur!=='pending'?`<button class="btn btn-ghost btn-sm" onclick="setApptStatus('${id}','pending');closeSheet()">Volver a pendiente</button>`:''}
+    </div>
+    <div class="divider"></div>
+    <div style="display:flex;gap:8px"><button class="btn btn-ghost" style="flex:1" onclick="closeSheet();editAppt('${id}')">Editar turno</button>
+    ${p?`<button class="btn btn-ghost" style="flex:1" onclick="closeSheet();openPatient('${p.id}')">Ver legajo</button>`:''}</div>
+    <p class="mini">Al marcarla como realizada se registra en la evolución del paciente y se apagan sus recordatorios.</p>`);
+}
+
+/* ============================================================
+   ALERTAS / RECORDATORIOS
+   Dos disparos por turno: al inicio del día y 1h antes.
+   Solo suenan si la sesión sigue pendiente.
+============================================================ */
+const LS_FIRED='andamiaje_fired_v1';
+let fired={}; // {apptId_kind: true}
+function loadFired(){try{fired=JSON.parse(localStorage.getItem(LS_FIRED)||'{}');}catch(e){fired={};}}
+function saveFired(){try{localStorage.setItem(LS_FIRED,JSON.stringify(fired));}catch(e){}}
+function dismissAlertsFor(apptId){fired[apptId+'_day']=true;fired[apptId+'_hour']=true;saveFired();renderAlertBar();}
+
+/* Alertas que corresponden ahora y siguen pendientes */
+function dueAlerts(){
+  const now=Date.now();const out=[];
+  db.appts.forEach(a=>{
+    if(apptStatus(a)!=='pending')return;          // computada => sin alerta
+    if(dayKey(a.ts)!==todayKey())return;           // solo turnos de hoy
+    const hourBefore=a.ts-60*60*1000;
+    if(now>=hourBefore && now<a.ts+90*60*1000 && !fired[a.id+'_hour']) out.push({a,kind:'hour'});
+    else if(now>=new Date(a.ts).setHours(0,0,0,0) && now<hourBefore && !fired[a.id+'_day']) out.push({a,kind:'day'});
+  });
+  return out.sort((x,y)=>x.a.ts-y.a.ts);
+}
+/* Texto relativo al reloj real */
+function relTime(ts){
+  const diff=ts-Date.now();
+  const min=Math.round(diff/60000);
+  if(min<-1) return {txt:'Empezó hace '+fmtMin(-min), late:true};
+  if(min<=1) return {txt:'Ahora', now:true};
+  if(min<60) return {txt:'En '+min+' min'};
+  const h=Math.floor(min/60), m=min%60;
+  if(h<24) return {txt:'En '+h+'h'+(m?' '+m+'min':'')};
+  return {txt:'En '+Math.round(h/24)+' día(s)'};
+}
+function fmtMin(m){ if(m<60)return m+' min'; const h=Math.floor(m/60),r=m%60; return h+'h'+(r?' '+r+'min':''); }
+function alertText(a,kind){
+  const p=db.patients.find(x=>x.id===a.patientId);
+  const d=new Date(a.ts);const hm=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  const who=p?p.name:'Turno';
+  const tipo=a.kind==='eval'?'Evaluación':'Sesión';
+  const r=relTime(a.ts);
+  return kind==='hour'
+    ? {t:`${r.txt}: ${who}`, b:`${tipo} a las ${hm}${a.note?' · '+a.note:''}`, late:r.late, now:r.now}
+    : {t:`Hoy ${hm}: ${who}`, b:`${tipo}${a.note?' · '+a.note:''} — ${r.txt}`, late:r.late, now:r.now};
+}
+
+/* Barra de alertas dentro de la app */
+function renderAlertBar(){
+  const host=$('#alertHost');if(!host)return;
+  const due=dueAlerts();
+  if(!due.length){host.innerHTML='';return;}
+  host.innerHTML=due.map(({a,kind})=>{
+    const x=alertText(a,kind);
+    const cls=kind+(x.late?' late':(x.now?' now':''));
+    return `<div class="alert-card ${cls}">
+      <div class="alert-ico">${kind==='hour'
+        ? '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="13" r="8" stroke="currentColor" stroke-width="1.8"/><path d="M12 9v4l2.5 2.5M5 3L2 6M19 3l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
+        : '<svg viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'}</div>
+      <div class="alert-body"><b>${esc(x.t)}</b><small>${esc(x.b)}</small></div>
+      <div class="alert-acts">
+        <button class="alert-done" onclick="setApptStatus('${a.id}','done')" title="Marcar realizada"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button class="alert-x" onclick="snoozeAlert('${a.id}','${kind}')" title="Descartar aviso">×</button>
+      </div></div>`;
+  }).join('');
+}
+function snoozeAlert(id,kind){fired[id+'_'+kind]=true;saveFired();renderAlertBar();toast('Aviso descartado');}
+
+/* Notificaciones del navegador */
+function notifyPermission(){
+  if(!('Notification' in window))return Promise.resolve('unsupported');
+  if(Notification.permission==='granted')return Promise.resolve('granted');
+  if(Notification.permission==='denied')return Promise.resolve('denied');
+  return Notification.requestPermission();
+}
+function pushNotif(title,body){
+  try{ if('Notification' in window && Notification.permission==='granted'){
+    const n=new Notification(title,{body,icon:'',tag:'andamiaje',renotify:false});
+    n.onclick=()=>{window.focus();nav('agenda');n.close();};
+  }}catch(e){}
+}
+function beep(){
+  try{
+    const C=window.AudioContext||window.webkitAudioContext; if(!C)return;
+    const ctx=new C(); const t=ctx.currentTime;
+    [880,1175].forEach((f,i)=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.type='sine';o.frequency.value=f;
+      g.gain.setValueAtTime(0,t+i*0.18);g.gain.linearRampToValueAtTime(0.18,t+i*0.18+0.02);
+      g.gain.exponentialRampToValueAtTime(0.001,t+i*0.18+0.16);
+      o.connect(g);g.connect(ctx.destination);o.start(t+i*0.18);o.stop(t+i*0.18+0.18);
+    });
+    setTimeout(()=>{try{ctx.close();}catch(e){}},900);
+  }catch(e){}
+}
+
+/* Motor: corre cada 30s con la app abierta */
+let alertTimer=null;
+function checkAlerts(){
+  const due=dueAlerts();
+  due.forEach(({a,kind})=>{
+    const k=a.id+'_'+kind+'_notified';
+    if(fired[k])return;           // ya notificado en esta sesión/dispositivo
+    const x=alertText(a,kind);
+    pushNotif(x.t,x.b);
+    if(db.profile.sound!==false)beep();
+    fired[k]=true;                // la tarjeta sigue visible hasta descartar o computar
+  });
+  if(due.length)saveFired();
+  renderAlertBar();
+  const badge=$('#alertBadge');
+  if(badge)badge.style.display=due.length?'block':'none';
+}
+function startAlertEngine(){
+  if(alertTimer)clearInterval(alertTimer);
+  checkAlerts();
+  alertTimer=setInterval(checkAlerts,20000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkAlerts();});
+}
+
+/* ============================================================
+   INGRESO (gate)
+   Usuario = nombre del perfil profesional. PIN por defecto 8989.
+============================================================ */
+const LS_PIN='andamiaje_pin', LS_SESS='andamiaje_sess';
+const PIN_DEFAULT='8989';
+const SESSION_MS=8*60*60*1000; // 8 horas
+
+function getPin(){return localStorage.getItem(LS_PIN)||PIN_DEFAULT;}
+function userName(){return (db.profile.name||'').trim();}
+function sessionValid(){
+  try{const s=JSON.parse(localStorage.getItem(LS_SESS)||'null');
+    return s && (Date.now()-s.t)<SESSION_MS;}catch(e){return false;}
+}
+function openSession(){localStorage.setItem(LS_SESS,JSON.stringify({t:Date.now()}));}
+function lockApp(){localStorage.removeItem(LS_SESS);gateInit();}
+
+function gateInit(){
+  // Sin perfil cargado todavía => primer uso, no hay a quién pedirle clave
+  if(!userName()){ enterApp(true); return; }
+  if(sessionValid()){ enterApp(false); return; }
+  showGate();
+}
+function showGate(){
+  $('#gate').style.display='flex';
+  document.body.style.overflow='hidden';
+  $('#gateUser').textContent=userName();
+  $('#gateAvatar').textContent=initials(userName());
+  $('#gateAvatar').style.background=colorFor(userName());
+  const inp=$('#gatePin');inp.value='';
+  setTimeout(()=>inp.focus(),200);
+}
+function enterApp(firstRun){
+  $('#gate').style.display='none';
+  document.body.style.overflow='';
+  nav('home');
+  startAlertEngine();
+  if(firstRun && !userName()){
+    setTimeout(()=>{ toast('Cargá tu perfil en ajustes para activar el ingreso con clave'); },900);
+  }
+}
+function tryUnlock(){
+  const v=$('#gatePin').value.trim();
+  if(v===getPin()){ openSession(); enterApp(false); toast('Bienvenida'); }
+  else{
+    const c=$('#gateCard');c.classList.add('shake');setTimeout(()=>c.classList.remove('shake'),450);
+    $('#gateErr').textContent='Clave incorrecta';
+    $('#gatePin').value='';$('#gatePin').focus();
+  }
+}
+
+/* ============================================================
+   Init
+============================================================ */
+loadDB();
+loadFired();
+gateInit();
+
+</script>
+</body>
+</html>
